@@ -1,0 +1,6 @@
+The Debian Package vyatta-base
+----------------------------
+
+This package contains the Vyatta serial full-upgrade script
+
+ -- Rick Balocca <rbalocca@vyatta.com>  Fri, 28 Mar 2008
