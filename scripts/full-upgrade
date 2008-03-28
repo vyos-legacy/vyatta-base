@@ -1,0 +1,144 @@
+#!/bin/sh -e
+
+# Author: Rick Balocca
+# Date: 2007
+# Description:
+
+nothing_installed()
+{
+	PATTERN='\<0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.'
+	grep "$PATTERN" /tmp/install$$ && grep "$PATTERN" /tmp/upgrade$$
+}
+
+nothing_upgraded()
+{
+	PATTERN='\<0 upgraded, 0 newly installed'
+	grep "$PATTERN" /tmp/install$$ && grep "$PATTERN" /tmp/upgrade$$
+}
+
+# Find all vyatta packages to remove
+[ "$1" = "-r" ] && remove_list=`dpkg -l|awk '{ print $2 }'|(grep 'vyatta' || true)`
+
+export DEBIAN_FRONTEND=noninteractive
+
+cd /tmp
+dpkg --configure -a
+apt-get -y -f install
+apt-get -f autoremove #??
+
+#[ "$remove_list" ] && dpkg -r --force-all $remove_list 2>/dev/null
+[ "$remove_list" ] && dpkg -r --force-all $remove_list
+
+apt-get -y -f install
+
+# If we upgrading from 2.1 or earlier, we don't have a remove_list of installed packages,
+# so generate it
+if [ ! -f /opt/vyatta/etc/deb-versions.txt ] && [ x`which save-package-report` != x ]
+then
+	save-package-report
+fi
+
+apt-get clean
+apt-get update
+
+(
+	cd /opt/vyatta/etc
+	mkdir /tmp/$$dir
+	cp deb-versions.txt version build.txt /tmp/$$dir 2>/dev/null
+)
+
+set +e
+apt-cache dumpavail|grep '^Package.*vyatta' |grep -v '^Package.*linux-header'| sed 's/Package:  *//'>/tmp/$$
+set -e
+
+install_list=`cat /tmp/$$`
+####install_list="$install_list laptop-detect dhcp3-client tasksel ntpdate ed aptitude file"
+echo Downloading updates.  This may take a few minutes...
+apt-get -y -f --download-only install $install_list >/tmp/install$$
+apt-get -y -f --download-only dist-upgrade >/tmp/upgrade$$
+
+set +e
+
+if nothing_installed
+then
+	echo
+	echo System already upgraded to newest packages
+	rm /tmp/install$$ /tmp/upgrade$$
+	apt-get clean	# clean up the downloads in case we are close to full on root
+	exit 0
+fi
+
+mv /tmp/$$dir/* /opt/vyatta/etc/.
+rm -rf /tmp/$$dir
+
+apt-get -y dist-upgrade
+apt-get -y install $install_list
+apt-get -y -f install
+apt-get -y install $install_list
+apt-get -y dist-upgrade
+apt-get -y -f install
+
+##############################################################
+[ -f /opt/vyatta/bin/showversion ] && /opt/vyatta/bin/showversion all>/tmp/$$
+
+installingversion=yes
+[ "$installingversion" ] && l=`grep '^Aii' /tmp/$$ | awk '{ print $2 }'`
+
+if [ "$l" ]
+then
+cat <<EOF
+The Vyatta Upgrade procedure detected packages installed on
+your system which are not required for this version of Vyatta
+software.
+
+This can occur because a package that Vyatta previously used
+is no longer required OR because it is a package manually
+added to your system by an administrator.
+
+Unless you have a specific reason for keeping these
+extra packages, Vyatta recommends that you allow the upgrade
+procedure to delete them.  If you wish to keep them now,
+but delete them later, you can do this using the CLI
+"delete package" command.
+
+The extra packages are listed below:
+
+EOF
+
+for i in $l
+do
+	echo $i
+done
+
+echo -n "Would you like to delete the extra packages listed above [Y/N]?"
+read j
+case $j in
+Yes | yes | Y | y )
+	apt-get --force-yes -y remove $l
+	;;
+*)
+	echo These packages will be kept.
+esac
+fi
+
+if [ "$installingversion" ]
+then
+	apt-get -y install `grep '^X' /tmp/$$ | awk '{ print $2 }'` \
+			   `grep '^D' /tmp/$$ | awk '{ print $2 }'`
+
+	apt-get -y -f install
+fi
+
+rm -f /tmp/$$
+##############################################################
+
+apt-get autoremove # ??
+apt-get clean	# clean up the downloads in case we are close to full on root
+
+echo You need to reboot the system to complete the upgrade
+echo -n "Reboot now? "
+read j
+case "$j" in
+y| Y| [yY][eE][sS] )
+	reboot;;
+esac

@@ -1,0 +1,21 @@
+Source: vyatta-base
+Section: contrib/net
+Priority: extra
+Maintainer: Rick Balocca <rbalocca@vyatta.com>
+Build-Depends: debhelper (>= 5), autotools-dev
+Standards-Version: 3.7.2
+
+Package: vyatta-base
+Section: contrib/net
+Architecture: all
+Priority: extra
+Depends: sed,
+ bash,
+ dpkg,
+ grep,
+ apt
+Description: Vyatta full-upgrade script
+ This script allows a full-upgrade all vyatta software
+ using apt and pdkg.  It will install all vyatta packages,
+ regardless of whether the individual Vyatta package was
+ previously installed.
