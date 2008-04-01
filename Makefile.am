@@ -11,3 +11,5 @@ configversion_DATA = scripts/base/base@1
 install-exec-hook:
 	find share ! -regex '\(.*~\|.*\.bak\|.*\.swp\|.*\#.*\#\)' -print0 |  cpio -0pd $(DESTDIR)/$(datadir)/..
 	find etc ! -regex '\(.*~\|.*\.bak\|.*\.swp\|.*\#.*\#\)' -print0 |  cpio -0pd $(DESTDIR)
+	mkdir -p $(DESTDIR)/usr/bin
+	(cd $(DESTDIR)/usr/bin;ln -s ../../opt/vyatta/bin/full-upgrade .)
