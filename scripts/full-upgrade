@@ -66,6 +66,21 @@ esac
 cd /tmp
 dpkg --configure -a
 apt-get -y -f install
+
+apt-get update
+md5sum /opt/vyatta/bin/full-upgrade>full-upgrade.md5
+apt-get -y -f install vyatta-base
+if ! (md5sum /opt/vyatta/bin/full-upgrade | diff - full-upgrade.md5 >/dev/null)
+then
+	echo The full-upgrade script was not up to date.
+	echo The latest one has been downloaded and
+	echo full-upgrade is being restarted.
+	rm -f full-upgrade.md5
+	exec /opt/vyatta/bin/full-upgrade $*
+fi
+
+rm -f full-upgrade.md5
+
 apt-get $netupgrade -f autoremove #??
 
 #[ "$remove_list" ] && dpkg -r --force-all $remove_list 2>/dev/null
@@ -75,13 +90,12 @@ apt-get -y -f install
 
 # If we upgrading from 2.1 or earlier, we don't have a remove_list of installed packages,
 # so generate it
-if [ ! -f /opt/vyatta/etc/deb-versions.txt ] && [ x`which save-package-report` != x ]
+if [ ! -f /opt/vyatta/etc/deb-versions.txt ] && which save-package-report >/dev/null
 then
 	save-package-report
 fi
 
 apt-get clean
-apt-get update
 
 (
 	cd /opt/vyatta/etc
@@ -121,12 +135,11 @@ apt-get -y dist-upgrade
 apt-get -y -f install
 
 ##############################################################
-[ -f /opt/vyatta/bin/showversion ] && /opt/vyatta/bin/showversion all>/tmp/$$
+which /opt/vyatta/bin/vyatta-show-version >/tmp/$$ && /opt/vyatta/bin/vyatta-show-version all>/tmp/$$
 
-installingversion=yes
-[ "$installingversion" ] && l=`grep '^Aii' /tmp/$$ | awk '{ print $2 }'`
+l=`grep '^Aii' /tmp/$$ | awk '{ print $2 }'`
 
-if [ "$l" && ! "$netupgrade" ]
+if [ "$l" -a x"$netupgrade" = x ]
 then
 cat <<EOF
 The Vyatta Upgrade procedure detected packages installed on
@@ -163,13 +176,10 @@ y|Y|[yY][eE][sS] )
 esac
 fi
 
-if [ "$installingversion" ]
-then
-	apt-get -y install `grep '^X' /tmp/$$ | awk '{ print $2 }'` \
-			   `grep '^D' /tmp/$$ | awk '{ print $2 }'`
+apt-get -y install `grep '^X' /tmp/$$ | awk '{ print $2 }'` \
+		   `grep '^D' /tmp/$$ | awk '{ print $2 }'`
 
-	apt-get -y -f install
-fi
+apt-get -y -f install
 
 rm -f /tmp/$$
 ##############################################################
