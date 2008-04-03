@@ -68,7 +68,7 @@ dpkg --configure -a
 apt-get -y -f install
 
 apt-get update
-md5sum /opt/vyatta/bin/full-upgrade>full-upgrade.md5
+md5sum /opt/vyatta/bin/full-upgrade 2>/dev/null >full-upgrade.md5a || true
 apt-get -y -f install vyatta-base
 if ! (md5sum /opt/vyatta/bin/full-upgrade | diff - full-upgrade.md5 >/dev/null)
 then
