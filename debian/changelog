@@ -1,5 +1,6 @@
 vyatta-base (0.1) unstable; urgency=low
 
+  3.0.2
   * Initial Release.
 
  -- Rick Balocca <rbalocca@vyatta.com>  Fri, 28 Mar 2008 12:52:01 -0700
