@@ -81,6 +81,8 @@ fi
 
 rm -f full-upgrade.md5
 
+sed '3icase "$1" in upgrade) exit 0;; esac' -i /var/lib/dpkg/info/vyatta-quagga.prerm
+
 apt-get $netupgrade -f autoremove #??
 
 #[ "$remove_list" ] && dpkg -r --force-all $remove_list 2>/dev/null
