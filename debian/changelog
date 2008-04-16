@@ -1,3 +1,16 @@
+vyatta-base (0.2) unstable; urgency=low
+
+  VC4.0.2
+  [ Mark O'Brien ]
+
+
+  [ rbalocca ]
+  * Full-upgrade script now modifies the vyatta-quagga prerm script
+
+  [ Mark O'Brien ]
+
+ -- Mark O'Brien <mobrien@vyatta.com>  Wed, 16 Apr 2008 09:49:45 -0700
+
 vyatta-base (0.1) unstable; urgency=low
 
   3.0.2
