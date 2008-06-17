@@ -1,3 +1,17 @@
+vyatta-base (0.7) unstable; urgency=low
+
+	  3.1.0
+  [ Mark O'Brien ]
+
+
+  [ rbalocca ]
+  * Ignore log files
+  * Switch to our standard changelog
+
+  [ Mark O'Brien ]
+
+ -- Mark O'Brien <mobrien@firebolt.vyatta.com>  Tue, 17 Jun 2008 09:25:52 -0700
+
 vyatta-base (0.6) unstable; urgency=low
 
   3.0.5
