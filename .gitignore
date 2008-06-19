@@ -12,3 +12,4 @@ config
 configure
 debian/files
 debian/vyatta-base
+debian/vyatta-base.debhelper.log
