@@ -211,6 +211,23 @@ rm -f /tmp/$$
 apt-get $netupgrade -f autoremove # ??
 apt-get clean	# clean up the downloads in case we are close to full on root
 
+# use UUID instead of device for grub
+root_dev=$(mount | grep ' on / type ' | cut -f 1 -d ' ')
+grub_file=/boot/grub/menu.lst
+if [ -r /boot/grub/grub.cfg ]; then
+  grub_file=/boot/grub/grub.cfg
+fi
+if [ -n "$root_dev" ]; then
+  uuid=$(dumpe2fs -h $root_dev 2>/dev/null \
+         | awk '/^Filesystem UUID/ {print $3}')
+  if [ -z "$uuid" ]
+  then
+      echo "ERROR: Unable to read filesystem UUID.  Exiting."
+      exit 1
+  fi 
+  sed -i "s:root=$root_dev:root=UUID=$uuid:" $grub_file
+fi
+
 # if we are upgrading from the net, don't bother asking the reboot question...
 [ "$netupgrade" ] && reboot
 
