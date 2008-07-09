@@ -103,12 +103,11 @@ case "$old_version" in
 	;;
 esac
 
-sed '3icase "$1" in upgrade) exit 0;; esac' -i /var/lib/dpkg/info/vyatta-quagga.prerm
+sed '3icase "$1" in upgrade) exit 0;; esac' -i /var/lib/dpkg/info/vyatta-quagga.prerm 2>/dev/null || true
 
 apt-get $netupgrade -f autoremove #??
 
-#[ "$remove_list" ] && dpkg -r --force-all $remove_list 2>/dev/null
-[ "$remove_list" ] && dpkg -r --force-all $remove_list
+[ "$remove_list" ] && dpkg -r --force-all $remove_list # 2>/dev/null
 
 apt-get -y -f install
 
@@ -134,8 +133,8 @@ set -e
 install_list=`cat /tmp/$$`
 ####install_list="$install_list laptop-detect dhcp3-client tasksel ntpdate ed aptitude file"
 echo Downloading updates.  This may take a few minutes...
-apt-get -y -f --download-only install $install_list >/tmp/install$$
-apt-get -y -f --download-only dist-upgrade >/tmp/upgrade$$
+apt-get -y -f --download-only install $install_list | tee /tmp/install$$
+apt-get -y -f --download-only dist-upgrade | tee /tmp/upgrade$$
 
 set +e
 
@@ -210,6 +209,23 @@ rm -f /tmp/$$
 
 apt-get $netupgrade -f autoremove # ??
 apt-get clean	# clean up the downloads in case we are close to full on root
+
+# use UUID instead of device for grub
+root_dev=$(mount | grep ' on / type ' | cut -f 1 -d ' ')
+grub_file=/boot/grub/menu.lst
+if [ -r /boot/grub/grub.cfg ]; then
+  grub_file=/boot/grub/grub.cfg
+fi
+if [ -n "$root_dev" ]; then
+  uuid=$(dumpe2fs -h $root_dev 2>/dev/null \
+         | awk '/^Filesystem UUID/ {print $3}')
+  if [ -z "$uuid" ]
+  then
+      echo "ERROR: Unable to read filesystem UUID.  Exiting."
+      exit 1
+  fi 
+  sed -i "s:root=$root_dev:root=UUID=$uuid:" $grub_file
+fi
 
 # if we are upgrading from the net, don't bother asking the reboot question...
 [ "$netupgrade" ] && reboot
