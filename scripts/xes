@@ -1,0 +1,12 @@
+#!/usr/bin/expect -f
+
+trap exit { SIGCHLD }
+
+# set timeout 99
+
+spawn $argv
+
+for {} 1 {} {
+	expect "*\\?" { send "Y\r" } eof { exit }
+	expect_tty "*\\?" { send Y\r } eof { exit }
+}

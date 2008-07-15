@@ -3,8 +3,7 @@ bin_SCRIPTS	 =
 
 bin_SCRIPTS	+= scripts/full-upgrade
 bin_SCRIPTS	+= scripts/save-package-report
-
-VYATTA_CONFIG_VERSION_DIR=/opt/vyatta/etc/config-migrate/current
+bin_SCRIPTS	+= scripts/xes
 
 install-exec-hook:
 	find share ! -regex '\(.*~\|.*\.bak\|.*\.swp\|.*\#.*\#\)' -print0 |  cpio -0pd $(DESTDIR)/$(datadir)/..
