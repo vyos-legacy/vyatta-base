@@ -1,0 +1,263 @@
+#!/bin/sh -e
+
+# Author: Rick Balocca
+# Date: 2007
+# Description:
+
+nothing_installed()
+{
+	PATTERN='\<0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.'
+	grep "$PATTERN" /tmp/install$$ && grep "$PATTERN" /tmp/upgrade$$
+}
+
+nothing_upgraded()
+{
+	PATTERN='\<0 upgraded, 0 newly installed'
+	grep "$PATTERN" /tmp/install$$ && grep "$PATTERN" /tmp/upgrade$$
+}
+
+usage()
+{
+	echo "Usage: $0 [ options ]"
+	echo " Where options can be:"
+	echo "  -r removes all vyatta packages before the install"
+	echo "  -h shows this text"
+	echo "  -u unattended upgrade (strictly remove packages not in the vyatta release)"
+	echo "  -x unattended upgrade (keep packages not in the vyatta release)"
+	echo "  -c upgrade from console (interactively--requires a connection for the length of the upgrade)"
+	echo "  -d download only"
+}
+
+df=noninteractive
+unattended=yes
+netupgrade=-y
+dontkeep=yes
+
+while getopts rhduc opt
+do
+  case $opt in
+  r)	remove_list=`dpkg -l|awk '{ print $2 }'|(grep 'vyatta' || true)`
+        ;;
+  c)	df=
+	unattended=
+	dontkeep=
+	netupgrade=
+	;;
+  d)	download_only=yes
+	;;
+  u)	unattended=yes
+	netupgrade=-y
+	dontkeep=yes
+	;;
+  x)	unattended=yes
+	netupgrade=-y
+	dontkeep=
+	;;
+  *)	usage
+	exit
+	;;
+  esac
+done
+
+[ "$df" ] && export DEBIAN_FRONTEND="$df"
+
+# Find all vyatta packages to remove
+cd /tmp
+dpkg --configure -a
+
+if [ "$unattended" ]
+then
+   #apt_arg=--no-download
+   true
+else
+   apt_arg=--download-only
+fi
+
+apt-get -y -f $apt_arg install
+
+[ "$unattended" ] || apt-get update
+
+apt-get update
+md5sum /opt/vyatta/bin/full-upgrade 2>/dev/null >full-upgrade.md5 || true
+apt-get -y -f install vyatta-base
+if ! (md5sum /opt/vyatta/bin/full-upgrade | diff - full-upgrade.md5 >/dev/null)
+then
+	echo The full-upgrade script was not up to date.
+	echo The latest one has been downloaded and
+	echo full-upgrade is being restarted.
+	rm -f full-upgrade.md5
+	exec /opt/vyatta/bin/full-upgrade $*
+fi
+
+rm -f full-upgrade.md5
+
+old_version=`grep '^Version' /opt/vyatta/etc/version|sed -e 's/.*[ 	]//'`
+new_version=`apt-get --dry-run install vyatta-version|grep '^Inst'|sed -e 's/.*(//' -e 's/ .*//'`
+case "$old_version" in 
+[0-9]* )
+	case "$new_version" in
+	[0-9]* )
+		;;
+	* )
+		echo ERROR: attempting to upgrade from supported to community
+		exit 1
+		;;
+	esac
+	;;
+* )
+	case "$new_version" in
+	[0-9]* )
+		remove_version_package=yes
+		;;
+	esac
+	;;
+esac
+
+sed '3icase "$1" in upgrade) exit 0;; esac' -i /var/lib/dpkg/info/vyatta-quagga.prerm 2>/dev/null || true
+
+apt-get $netupgrade -f autoremove #??
+
+[ "$remove_list" ] && dpkg -r --force-all $remove_list # 2>/dev/null
+
+apt-get -y -f install
+
+# If we upgrading from 2.1 or earlier, we don't have a remove_list of installed packages,
+# so generate it
+if [ ! -f /opt/vyatta/etc/deb-versions.txt ] && which save-package-report >/dev/null
+then
+	save-package-report
+fi
+
+apt-get clean
+
+(
+	cd /opt/vyatta/etc
+	mkdir /tmp/$$dir
+	cp deb-versions.txt version build.txt /tmp/$$dir 2>/dev/null
+)
+
+set +e
+apt-cache dumpavail|grep '^Package.*vyatta' |grep -v '^Package.*linux-header'| sed 's/Package:  *//'|tr -d '\n'>/tmp/$$
+set -e
+
+install_list=`cat /tmp/$$`
+####install_list="$install_list laptop-detect dhcp3-client tasksel ntpdate ed aptitude file"
+echo Downloading updates.  This may take a few minutes...
+apt-get -y -f $apt_arg install $install_list | tee /tmp/install$$
+apt-get -y -f $apt_arg dist-upgrade | tee /tmp/upgrade$$
+
+[ "$download_only" ] && exit
+
+set +e
+
+if nothing_installed
+then
+	echo
+	echo System already upgraded to newest packages
+	rm /tmp/install$$ /tmp/upgrade$$
+	apt-get clean	# clean up the downloads in case we are close to full on root
+	exit 0
+fi
+
+mv /tmp/$$dir/* /opt/vyatta/etc/.
+rm -rf /tmp/$$dir
+
+if [ "$unattended" ]
+then
+  apt_arg=--no-download
+else
+  apt_arg=
+fi
+
+[ "$remove_version_package" ] && apt-get -y remove vyatta-version
+apt-get -y $apt_arg -f install
+apt-get -y $apt_arg install "$install_list"
+apt-get -y $apt_arg dist-upgrade
+apt-get -y -f $apt_arg install
+
+##############################################################
+which /opt/vyatta/bin/vyatta-show-version >/tmp/$$ && /opt/vyatta/bin/vyatta-show-version all>/tmp/$$
+
+l=`grep '^Aii' /tmp/$$ | awk '{ print $2 }'`
+
+if [ "$l" -a x"$netupgrade" = x ]
+then
+cat <<EOF
+The Vyatta Upgrade procedure detected packages installed on
+your system which are not required for this version of Vyatta
+software.
+
+This can occur because a package that Vyatta previously used
+is no longer required OR because it is a package manually
+added to your system by an administrator.
+
+Unless you have a specific reason for keeping these
+extra packages, Vyatta recommends that you allow the upgrade
+procedure to delete them.  If you wish to keep them now,
+but delete them later, you can do this using the CLI
+"delete package" command.
+
+The extra packages are listed below:
+
+EOF
+
+for i in $l
+do
+	echo $i
+done
+
+if [ "$dontkeep" ]
+then
+  j=No
+else
+  echo -n "Would you like to keep the extra packages listed above [Y/N]? "
+  read j
+fi
+
+case "$j" in
+n|N|[nN][oO] )
+	apt-get --force-yes -y remove $l
+	;;
+*)
+	echo These packages will be kept.
+esac
+fi
+
+apt-get -y $apt_arg install `grep '^X' /tmp/$$ | awk '{ print $2 }'` \
+		   `grep '^D' /tmp/$$ | awk '{ print $2 }'`
+
+apt-get -y -f install
+
+rm -f /tmp/$$
+##############################################################
+
+apt-get $netupgrade -f autoremove # ??
+apt-get clean	# clean up the downloads in case we are close to full on root
+
+# use UUID instead of device for grub
+root_dev=$(mount | grep ' on / type ' | cut -f 1 -d ' ')
+grub_file=/boot/grub/menu.lst
+if [ -r /boot/grub/grub.cfg ]; then
+  grub_file=/boot/grub/grub.cfg
+fi
+if [ -n "$root_dev" ]; then
+  uuid=$(dumpe2fs -h $root_dev 2>/dev/null \
+         | awk '/^Filesystem UUID/ {print $3}')
+  if [ -z "$uuid" ]
+  then
+      echo "ERROR: Unable to read filesystem UUID.  Exiting."
+      exit 1
+  fi 
+  sed -i "s:root=$root_dev:root=UUID=$uuid:" $grub_file
+fi
+
+# if we are upgrading from the net, don't bother asking the reboot question...
+[ "$netupgrade" ] && reboot
+
+echo You need to reboot the system to complete the upgrade
+echo -n "Reboot now? "
+read j
+case "$j" in
+y|Y|[yY][eE][sS] )
+	reboot;;
+esac
