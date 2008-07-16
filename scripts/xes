@@ -4,6 +4,9 @@ trap exit { SIGCHLD }
 
 # set timeout 99
 
+log_user 0
+log_file -a /root/full-upgrade.log
+
 spawn $argv
 
 for {} 1 {} {

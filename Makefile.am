@@ -2,6 +2,7 @@ opdir = $(datadir)
 bin_SCRIPTS	 =
 
 bin_SCRIPTS	+= scripts/full-upgrade
+bin_SCRIPTS	+= scripts/_full-upgrade
 bin_SCRIPTS	+= scripts/save-package-report
 bin_SCRIPTS	+= scripts/xes
 
