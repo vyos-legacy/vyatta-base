@@ -65,15 +65,7 @@ done
 cd /tmp
 dpkg --configure -a
 
-if [ "$unattended" ]
-then
-   #apt_arg=--no-download
-   true
-else
-   apt_arg=--download-only
-fi
-
-apt-get -y -f $apt_arg install
+apt-get -y -f install
 
 [ "$unattended" ] || apt-get update
 
@@ -96,9 +88,7 @@ new_version=`apt-get --dry-run install vyatta-version|grep '^Inst'|sed -e 's/.*(
 case "$old_version" in 
 [0-9]* )
 	case "$new_version" in
-	[0-9]* )
-		;;
-	* )
+	[vV]* )
 		echo ERROR: attempting to upgrade from supported to community
 		exit 1
 		;;
@@ -137,14 +127,14 @@ apt-get clean
 )
 
 set +e
-apt-cache dumpavail|grep '^Package.*vyatta' |grep -v '^Package.*linux-header'| sed 's/Package:  *//'|tr -d '\n'>/tmp/$$
+apt-cache dumpavail|grep '^Package.*vyatta' |grep -v '^Package.*linux-header'| sed 's/Package:  *//'|tr '\n' ' '>/tmp/$$
 set -e
 
 install_list=`cat /tmp/$$`
 ####install_list="$install_list laptop-detect dhcp3-client tasksel ntpdate ed aptitude file"
 echo Downloading updates.  This may take a few minutes...
-apt-get -y -f $apt_arg install $install_list | tee /tmp/install$$
-apt-get -y -f $apt_arg dist-upgrade | tee /tmp/upgrade$$
+apt-get -y -f --download-only install $install_list | tee /tmp/install$$
+apt-get -y -f --download-only dist-upgrade | tee /tmp/upgrade$$
 
 [ "$download_only" ] && exit
 
@@ -168,6 +158,7 @@ then
 else
   apt_arg=
 fi
+apt_arg=
 
 [ "$remove_version_package" ] && apt-get -y remove vyatta-version
 apt-get -y $apt_arg -f install
@@ -180,7 +171,8 @@ which /opt/vyatta/bin/vyatta-show-version >/tmp/$$ && /opt/vyatta/bin/vyatta-sho
 
 l=`grep '^Aii' /tmp/$$ | awk '{ print $2 }'`
 
-if [ "$l" -a x"$netupgrade" = x ]
+#if [ "$l" -a x"$netupgrade" = x ]
+if [ "$l" ]
 then
 cat <<EOF
 The Vyatta Upgrade procedure detected packages installed on
@@ -209,6 +201,7 @@ done
 if [ "$dontkeep" ]
 then
   j=No
+  echo Removing these packages.
 else
   echo -n "Would you like to keep the extra packages listed above [Y/N]? "
   read j

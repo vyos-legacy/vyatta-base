@@ -12,7 +12,7 @@ case "$1" in
 	echo "To view the progress, log in as root"
 	echo "using a different console"
 	echo "and run tail -f full-upgrade.log ."
-	/opt/vyatta/bin/xes /opt/vyatta/bin/_full-upgrade -u
+	/opt/vyatta/bin/xes /opt/vyatta/bin/_full-upgrade
 	;;
 *)
 	exec /opt/vyatta/bin/_full-upgrade $*
