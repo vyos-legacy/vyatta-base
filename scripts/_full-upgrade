@@ -162,7 +162,7 @@ apt_arg=
 
 [ "$remove_version_package" ] && apt-get -y remove vyatta-version
 apt-get -y $apt_arg -f install
-apt-get -y $apt_arg install "$install_list"
+apt-get -y $apt_arg install $install_list
 apt-get -y $apt_arg dist-upgrade
 apt-get -y -f $apt_arg install
 
