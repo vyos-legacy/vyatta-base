@@ -56,7 +56,7 @@ case "$old_version" in
 	;;
 * )
 	case "$new_version" in
-	[0-9]* )
+	[0-9]* | "" )
 		apt-get -y remove vyatta-version
 		;;
 	esac
