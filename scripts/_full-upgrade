@@ -34,3 +34,5 @@ case "$1" in
 	remove-packages -c
 	;;
 esac
+
+rm -rf /tmp/full-upgrade

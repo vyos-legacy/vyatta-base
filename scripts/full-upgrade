@@ -9,7 +9,14 @@ if [ "$1" ]
 then
 	/opt/vyatta/bin/_full-upgrade $*
 else
-	touch nohup.out
-	nohup /opt/vyatta/bin/_full-upgrade $*>&nohup.out&
-	tail -f nohup.out
+	if ! mkdir full-upgrade
+	then
+		echo "full-upgrade can't acquire it's lock file (/tmp/full-upgrade)."
+		echo "You may be attempting to run full-upgrade more than once simultaneously."
+		exit 1
+	fi
+	hupfile=full-upgrade/nohup.out
+	touch $hupfile
+	nohup /opt/vyatta/bin/_full-upgrade $*>&$hupfile &
+	tail -f $hupfile
 fi
