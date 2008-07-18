@@ -17,9 +17,6 @@ case "$1" in
 	echo "Please wait.  Now entering unattended mode."
 	echo "This will take a long time.  When done,"
 	echo "the system will automatically reboot."
-	echo "To view the progress, log in as root"
-	echo "using a different console"
-	echo "and run tail -f /root/full-upgrade.log ."
 	touch /root/full-upgrade.log
 	(xes /opt/vyatta/bin/install-only;xes /opt/vyatta/bin/remove-packages)&
 	tail -f /root/full-upgrade.log|grep -v '^fopen:'
