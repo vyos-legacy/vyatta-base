@@ -1,20 +1,9 @@
 #!/bin/sh
 
-case "$1" in
--u|"")	
-	# first do the download:
-	/opt/vyatta/bin/_full-upgrade -d
+# Author: Rick Balocca
+# Date: 2007
+# Description:
 
-	# then finish the upgrade in unattended mode
-	echo "Please wait.  Now entering unattended mode."
-	echo "This will take a long time.  When done,"
-	echo "the system will automatically reboot."
-	echo "To view the progress, log in as root"
-	echo "using a different console"
-	echo "and run tail -f full-upgrade.log ."
-	/opt/vyatta/bin/xes /opt/vyatta/bin/_full-upgrade
-	;;
-*)
-	exec /opt/vyatta/bin/_full-upgrade $*
-;;
-esac
+cd /tmp
+nohup /opt/vyatta/bin/_full-upgrade >&nohup.out&
+tail -f nohup.out

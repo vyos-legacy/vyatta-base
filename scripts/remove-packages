@@ -1,0 +1,56 @@
+#!/bin/sh
+
+# Author: Rick Balocca
+# Date: 2007
+# Description:
+
+dontkeep=yes
+
+which /opt/vyatta/bin/vyatta-show-version >/dev/null && /opt/vyatta/bin/vyatta-show-version all>/tmp/$$
+
+l=`grep '^Aii' /tmp/$$ | awk '{ print $2 }'`
+
+if [ "$l" ]
+then
+cat <<EOF
+The Vyatta Upgrade procedure detected packages installed on
+your system which are not required for this version of Vyatta
+software.
+
+This can occur because a package that Vyatta previously used
+is no longer required OR because it is a package manually
+added to your system by an administrator.
+
+Unless you have a specific reason for keeping these
+extra packages, Vyatta recommends that you allow the upgrade
+procedure to delete them.  If you wish to keep them now,
+but delete them later, you can do this using the CLI
+"delete package" command.
+
+The extra packages are listed below:
+
+EOF
+
+for i in $l
+do
+	echo $i
+done
+
+if [ "$dontkeep" ]
+then
+  j=No
+  echo Removing these packages.
+else
+  echo -n "Would you like to keep the extra packages listed above [Y/N]? "
+  read j
+fi
+
+case "$j" in
+n|N|[nN][oO] )
+	apt-get --force-yes -y remove $l
+	;;
+*)
+	echo These packages will be kept.
+esac
+fi
+

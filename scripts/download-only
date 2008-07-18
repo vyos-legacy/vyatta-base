@@ -1,0 +1,95 @@
+#!/bin/sh -e
+
+# Author: Rick Balocca
+# Date: 2007
+# Description:
+
+nothing_installed()
+{
+	PATTERN='\<0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.'
+	grep "$PATTERN" /tmp/install$$ && grep "$PATTERN" /tmp/upgrade$$
+}
+
+nothing_upgraded()
+{
+	PATTERN='\<0 upgraded, 0 newly installed'
+	grep "$PATTERN" /tmp/install$$ && grep "$PATTERN" /tmp/upgrade$$
+}
+
+df=noninteractive
+unattended=yes
+netupgrade=-y
+dontkeep=yes
+download_only=yes
+export DEBIAN_FRONTEND="$df"
+
+# Find all vyatta packages to remove
+cd /tmp
+dpkg --configure -a
+
+apt-get -y -f install
+
+apt-get update
+md5sum /opt/vyatta/bin/full-upgrade 2>/dev/null >full-upgrade.md5 || true
+apt-get -y -f install vyatta-base
+if ! (md5sum /opt/vyatta/bin/full-upgrade | diff - full-upgrade.md5 >/dev/null)
+then
+	echo The full-upgrade script was not up to date.
+	echo The latest one has been downloaded and
+	echo full-upgrade is being restarted.
+	rm -f full-upgrade.md5
+	exec /opt/vyatta/bin/full-upgrade $*
+fi
+
+rm -f full-upgrade.md5
+
+old_version=`grep '^Version' /opt/vyatta/etc/version|sed -e 's/.*[ 	]//'`
+new_version=`apt-get --dry-run install vyatta-version|grep '^Inst'|sed -e 's/.*(//' -e 's/ .*//'`
+case "$old_version" in 
+[0-9]* )
+	case "$new_version" in
+	[vV]* )
+		echo ERROR: attempting to upgrade from supported to community
+		exit 1
+		;;
+	esac
+	;;
+* )
+	case "$new_version" in
+	[0-9]* )
+		apt-get -y remove vyatta-version
+		;;
+	esac
+	;;
+esac
+
+apt-get $netupgrade -f autoremove #??
+apt-get -y -f install
+apt-get clean
+apt-get install vyatta-version
+
+#apt-cache dumpavail|grep '^Package.*vyatta' |grep -v '^Package.*linux-header'| sed 's/Package:  *//'|tr '\n' ' '>/tmp/$$ || true
+#install_list=`cat /tmp/$$`
+
+install_list=`awk '{print $1}' /opt/vyatta/etc/deb-versions.txt|tr '\n' ' '`
+
+if [ ! "$install_list" ]
+then
+	echo "Version package not installed correctly.  Exiting."
+	exit 1
+fi
+
+echo Downloading updates.  This may take a few minutes...
+apt-get -y -f -d install $install_list | tee /tmp/install$$
+apt-get -y -f -d dist-upgrade | tee /tmp/upgrade$$
+
+if nothing_installed
+then
+	echo
+	echo System already upgraded to newest packages
+	rm /tmp/install$$ /tmp/upgrade$$
+	apt-get clean	# clean up the downloads in case we are close to full on root
+	exit 0
+fi
+
+#rm -rf /tmp/install$$ /tmp/upgrade$$

@@ -1,0 +1,19 @@
+#!/bin/sh -e
+
+# Author: Rick Balocca
+# Date: 2007
+# Description:
+
+apt-get update
+md5sum /opt/vyatta/bin/full-upgrade 2>/dev/null >full-upgrade.md5 || true
+apt-get -y -f install vyatta-base
+if ! (md5sum /opt/vyatta/bin/full-upgrade | diff - full-upgrade.md5 >/dev/null)
+then
+	echo The vyatt-base package was not up to date.
+	echo The latest one has been downloaded and
+	echo this script is being restarted.
+	rm -f full-upgrade.md5
+	exec $0 $*
+fi
+
+rm -f full-upgrade.md5

@@ -5,6 +5,11 @@ bin_SCRIPTS	+= scripts/full-upgrade
 bin_SCRIPTS	+= scripts/_full-upgrade
 bin_SCRIPTS	+= scripts/save-package-report
 bin_SCRIPTS	+= scripts/xes
+bin_SCRIPTS	+= scripts/check-upgrade
+bin_SCRIPTS	+= scripts/download-only
+bin_SCRIPTS	+= scripts/install-only
+bin_SCRIPTS	+= scripts/remove-packages
+
 
 install-exec-hook:
 	find share ! -regex '\(.*~\|.*\.bak\|.*\.swp\|.*\#.*\#\)' -print0 |  cpio -0pd $(DESTDIR)/$(datadir)/..
