@@ -30,7 +30,7 @@ case "$1" in
 	;;
 -c)
 	download-only
-	install-only
-	remove-packages
+	install-only -c
+	remove-packages -c
 	;;
 esac

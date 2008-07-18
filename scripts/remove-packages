@@ -5,6 +5,10 @@
 # Description:
 
 dontkeep=yes
+if [ "$1" = -c ]
+then
+	dontkeep=
+fi
 
 which /opt/vyatta/bin/vyatta-show-version >/dev/null && /opt/vyatta/bin/vyatta-show-version all>/tmp/$$
 
