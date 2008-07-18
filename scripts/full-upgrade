@@ -9,6 +9,7 @@ if [ "$1" ]
 then
 	/opt/vyatta/bin/_full-upgrade $*
 else
+	touch nohup.out
 	nohup /opt/vyatta/bin/_full-upgrade $*>&nohup.out&
 	tail -f nohup.out
 fi
