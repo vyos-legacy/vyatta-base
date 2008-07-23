@@ -77,6 +77,8 @@ if [ -n "$root_dev" ]; then
   sed -i "s:root=$root_dev:root=UUID=$uuid:" $grub_file
 fi
 
+upgrade-from-grub-legacy
+
 # if we are upgrading from the net, don't bother asking the reboot question...
 #[ "$netupgrade" ] && reboot
 
