@@ -16,7 +16,7 @@ else
 		exit 1
 	fi
 	hupfile=full-upgrade/nohup.out
-	touch $hupfile
+	touch /root/full-upgrade.log
 	nohup /opt/vyatta/bin/_full-upgrade $*>&$hupfile &
-	tail -f $hupfile
+	tail -f /root/full-upgrade.log
 fi
