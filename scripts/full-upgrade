@@ -4,19 +4,51 @@
 # Date: 2007
 # Description:
 
-cd /tmp
-if [ "$1" ]
-then
-	/opt/vyatta/bin/_full-upgrade $*
-else
-	if ! mkdir full-upgrade
+usage()
+{
+	echo "Usage: $0 [ option ]"
+	echo "where option can be one of:"
+	echo " -c: do an upgrade from the console"
+	echo " -x: keep all non-vyatta installed packages"
+	echo " -h: provide help and exit"
+}
+
+unattended()
+{
+	if ! mkdir full-upgrade.lock
 	then
 		echo "full-upgrade can't acquire it's lock file (/tmp/full-upgrade)."
 		echo "You may be attempting to run full-upgrade more than once simultaneously."
 		exit 1
 	fi
-	hupfile=full-upgrade/nohup.out
-	touch /root/full-upgrade.log
-	nohup /opt/vyatta/bin/_full-upgrade $*>&$hupfile &
-	tail -f /root/full-upgrade.log
-fi
+	hupfile=/root/nohup.out
+	>/root/full-upgrade.log
+	tail -f /root/full-upgrade.log&
+	nohup /opt/vyatta/bin/_full-upgrade $*>&$hupfile
+	cat /root/nohup.out
+	rm -rf full-upgrade.lock
+}
+cd /tmp
+case "$1" in
+ -c )
+	/opt/vyatta/bin/_full-upgrade $*
+	;;
+
+ -u | -x  | "" )
+	if ! mkdir full-upgrade.lock
+	then
+		echo "full-upgrade can't acquire it's lock file (/tmp/full-upgrade)."
+		echo "You may be attempting to run full-upgrade more than once simultaneously."
+		exit 1
+	fi
+	hupfile=/root/nohup.out
+	>/root/full-upgrade.log
+	tail -f /root/full-upgrade.log&
+	nohup /opt/vyatta/bin/_full-upgrade $*>&$hupfile
+	cat /root/nohup.out
+	rm -rf full-upgrade.lock
+	;;
+
+ * )
+	usage
+esac

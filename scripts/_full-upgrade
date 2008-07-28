@@ -8,11 +8,11 @@ PATH=/opt/vyatta/bin:$PATH
 
 check-upgrade
 
+# first do the download:
+download-only || exit $?
+
 case "$1" in
 -u|"")	
-	# first do the download:
-	download-only
-
 	# then finish the upgrade in unattended mode
 	echo "Please wait.  Now entering unattended mode."
 	echo "This will take a long time.  When done,"
@@ -20,14 +20,14 @@ case "$1" in
 	(xes /opt/vyatta/bin/install-only;xes /opt/vyatta/bin/remove-packages)
 	;;
 -x)
-	download-only
-	install-only
+	# then finish the upgrade in unattended mode
+	echo "Please wait.  Now entering unattended mode."
+	echo "This will take a long time.  When done,"
+	echo "the system will automatically reboot."
+	(xes /opt/vyatta/bin/install-only;xes /opt/vyatta/bin/dont_remove-packages)
 	;;
 -c)
-	download-only
-	install-only -c
-	remove-packages -c
+	install-only
+	remove-packages
 	;;
 esac
-
-rm -rf /tmp/full-upgrade

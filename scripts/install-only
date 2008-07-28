@@ -67,12 +67,11 @@ if [ -r /boot/grub/grub.cfg ]; then
   grub_file=/boot/grub/grub.cfg
 fi
 if [ -n "$root_dev" ]; then
-  uuid=$(dumpe2fs -h $root_dev 2>/dev/null \
-         | awk '/^Filesystem UUID/ {print $3}')
-  if [ -z "$uuid" ]
+#/dev/disk/by-uuid/8388560f-14a6-4165-b5cf-b00d12ea219c / ext3 rw,data=ordered 0 0
+  uuid=`grep '/dev/disk/by-uuid/[^ ]* / ' /proc/mounts | sed 's,/dev/disk/by-uuid/\([^ ]*\) / .*,\1,'`
+  if [ "$uuid" ]
   then
-      echo "ERROR: Unable to read filesystem UUID.  Exiting."
-      exit 1
+      echo "WARNING: Unable to read filesystem UUID."
   fi 
   sed -i "s:root=$root_dev:root=UUID=$uuid:" $grub_file
 fi
