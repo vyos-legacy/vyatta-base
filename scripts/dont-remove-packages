@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# Author: Rick Balocca
+# Date: 2007
+# Description:
+
+exec _remove-packages
