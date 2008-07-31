@@ -66,6 +66,21 @@ esac
 apt-get $netupgrade -f autoremove #??
 apt-get -y -f install
 apt-get clean
+
+
+free=`df /var/cache/apt/archives|tail -1|awk '{print $4}'`
+
+if [ "$free" -a "$free" -lt 400000 ]
+then
+	echo "There is not much free disk space for downloading a full upgrade."
+	echo "Shall I exit instead of proceeding [Y/n]?"
+	read j
+	case "$j" in
+	y|Y|[yY][eE][sS] )
+		exit 2
+	esac
+fi
+
 apt-get install vyatta-version
 
 #apt-cache dumpavail|grep '^Package.*vyatta' |grep -v '^Package.*linux-header'| sed 's/Package:  *//'|tr '\n' ' '>/tmp/$$ || true
@@ -89,7 +104,7 @@ then
 	echo System already upgraded to newest packages
 	rm /tmp/install$$ /tmp/upgrade$$
 	apt-get clean	# clean up the downloads in case we are close to full on root
-	exit 0
+	exit 1
 fi
 
 #rm -rf /tmp/install$$ /tmp/upgrade$$
