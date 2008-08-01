@@ -13,22 +13,13 @@ usage()
 	echo " -h: provide help and exit"
 }
 
-unattended()
-{
-	if ! mkdir full-upgrade.lock
-	then
-		echo "full-upgrade can't acquire it's lock file (/tmp/full-upgrade)."
-		echo "You may be attempting to run full-upgrade more than once simultaneously."
-		exit 1
-	fi
-	hupfile=/root/nohup.out
-	>/root/full-upgrade.log
-	tail -f /root/full-upgrade.log&
-	nohup /opt/vyatta/bin/_full-upgrade $*>&$hupfile
-	cat /root/nohup.out
-	rm -rf full-upgrade.lock
-}
 cd /tmp
+
+#check-upgrade
+
+# first do the download:
+download-only || exit $?
+
 case "$1" in
  -c )
 	/opt/vyatta/bin/_full-upgrade $*
@@ -39,12 +30,14 @@ case "$1" in
 	then
 		echo "full-upgrade can't acquire it's lock file (/tmp/full-upgrade)."
 		echo "You may be attempting to run full-upgrade more than once simultaneously."
+		echo "If you want to proceed, then first rm -rf /tmp/full-upgrade."
 		exit 1
 	fi
 	hupfile=/root/nohup.out
 	>/root/full-upgrade.log
 	tail -f /root/full-upgrade.log&
 	nohup /opt/vyatta/bin/_full-upgrade $*>&$hupfile
+	sleep 10
 	cat /root/nohup.out
 	rm -rf full-upgrade.lock
 	;;

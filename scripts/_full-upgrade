@@ -6,11 +6,6 @@
 
 PATH=/opt/vyatta/bin:$PATH
 
-check-upgrade
-
-# first do the download:
-download-only || exit $?
-
 case "$1" in
 -u|"")	
 	# then finish the upgrade in unattended mode
