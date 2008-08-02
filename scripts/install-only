@@ -62,19 +62,12 @@ apt-get $apt_args clean	# remove the downloads in case we are close to full on r
 
 # use UUID instead of device for grub
 root_dev=$(mount | grep ' on / type ' | cut -f 1 -d ' ')
-grub_file=/boot/grub/menu.lst
-if [ -r /boot/grub/grub.cfg ]; then
-  grub_file=/boot/grub/grub.cfg
+if grep -q ide=nodma /boot/grub/menu.lst /boot/grub/grub.cfg
+then
+	$grub_options=ide=nodma
 fi
-if [ -n "$root_dev" ]; then
-#/dev/disk/by-uuid/8388560f-14a6-4165-b5cf-b00d12ea219c / ext3 rw,data=ordered 0 0
-  uuid=`grep '/dev/disk/by-uuid/[^ ]* / ' /proc/mounts | sed 's,/dev/disk/by-uuid/\([^ ]*\) / .*,\1,'`
-  if [ "$uuid" ]
-  then
-      echo "WARNING: Unable to read filesystem UUID."
-  fi 
-  sed -i "s:root=$root_dev:root=UUID=$uuid:" $grub_file
-fi
+
+/opt/vyatta/sbin/grub-setup "$root_dev" "$grub_options" || echo WARNING: grub not completely setup.
 
 (   [ -s /boot/grub/menu.lst ] &&
 	upgrade-from-grub-legacy &&

@@ -4,6 +4,8 @@
 # Date: 2007
 # Description:
 
+PATH=/opt/vyatta/bin:$PATH
+
 usage()
 {
 	echo "Usage: $0 [ option ]"
