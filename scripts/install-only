@@ -60,19 +60,15 @@ fi
 apt-get $apt_args autoremove # ??
 apt-get $apt_args clean	# remove the downloads in case we are close to full on root
 
-# use UUID instead of device for grub
-root_dev=$(mount | grep ' on / type ' | cut -f 1 -d ' ')
-if grep -q ide=nodma /boot/grub/menu.lst /boot/grub/grub.cfg
+##### use UUID instead of device for grub
+root_dev=$(mount | grep ' on / type ' | cut -f 1 -d ' '|sed 's,/dev/,,')
+
+if grep ide=nodma /boot/grub/menu.lst /boot/grub/grub.cfg >&/dev/null
 then
 	grub_options=ide=nodma
 fi
 
 /opt/vyatta/sbin/grub-setup "$root_dev" "$grub_options" || echo WARNING: grub not completely setup.
-
-(   [ -s /boot/grub/menu.lst ] &&
-	upgrade-from-grub-legacy &&
-	rm -f /boot/grub/menu.lst*
-) || true
 
 # if we are upgrading from the net, don't bother asking the reboot question...
 #[ "$netupgrade" ] && reboot
