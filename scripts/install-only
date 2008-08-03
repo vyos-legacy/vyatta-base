@@ -64,7 +64,7 @@ apt-get $apt_args clean	# remove the downloads in case we are close to full on r
 root_dev=$(mount | grep ' on / type ' | cut -f 1 -d ' ')
 if grep -q ide=nodma /boot/grub/menu.lst /boot/grub/grub.cfg
 then
-	$grub_options=ide=nodma
+	grub_options=ide=nodma
 fi
 
 /opt/vyatta/sbin/grub-setup "$root_dev" "$grub_options" || echo WARNING: grub not completely setup.
