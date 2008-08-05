@@ -1,3 +1,46 @@
+vyatta-base (0.9) unstable; urgency=low
+
+	  3.1.2
+  [ Mark O'Brien ]
+
+
+  [ rbalocca ]
+  * More fixes for bug http://bugzilla.vyatta.com/show_bug.cgi?id=3417
+
+  [ Rick Balocca ]
+  * Move additional code from vyatta-cfg to fix bug
+    http://bugzilla.vyatta.com/show_bug.cgi?id=3417
+  * Fix for bug http://bugzilla.vyatta.com/show_bug.cgi?id=3417
+
+  [ rbalocca ]
+  * Remove unneeded informational messages
+  * Handle upgrading from community to supported
+
+  [ Rick Balocca ]
+  * Fix for bug http://bugzilla.vyatta.com/show_bug.cgi?id=3483
+  * Fix for bugs http://bugzilla.vyatta.com/show_bug.cgi?id=3487 and
+    http://bugzilla.vyatta.com/show_bug.cgi?id=3482
+
+  [ rbalocca ]
+  * Implement -c (console) option
+  * Set full-upgrade script to execute permission
+  * Allow full-upgrade to proceed regardless of dpkg question and loss
+    of connection
+  * Don't quote the install list
+  * Improve check for supported vs. community
+  * Fixes
+  * Add the null argument
+  * Add -x option to keep all packages not in the vyatta release
+  * Fixes for unattended upgrade
+  * Fix for bug http://bugzilla.vyatta.com/show_bug.cgi?id=2635
+
+  [ An-Cheng Huang ]
+  * fix for bug 3417: use UUID in grub config file
+
+  [ Mark O'Brien ]
+
+ -- Mark O'Brien <mobrien@firebolt.vyatta.com>  Wed, 23 Jul 2008 21:35:43 -0700
+
 vyatta-base (0.8) unstable; urgency=low
 
 	  3.1.1
