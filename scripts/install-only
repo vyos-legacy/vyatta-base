@@ -69,14 +69,3 @@ then
 fi
 
 /opt/vyatta/sbin/grub-setup "$root_dev" "$grub_options" || echo WARNING: grub not completely setup.
-
-# if we are upgrading from the net, don't bother asking the reboot question...
-#[ "$netupgrade" ] && reboot
-
-echo You need to reboot the system to complete the upgrade
-echo -n "Reboot now? "
-read j
-case "$j" in
-y|Y|[yY][eE][sS] )
-	reboot;;
-esac

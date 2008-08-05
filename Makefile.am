@@ -9,6 +9,8 @@ bin_SCRIPTS	+= scripts/check-upgrade
 bin_SCRIPTS	+= scripts/download-only
 bin_SCRIPTS	+= scripts/install-only
 bin_SCRIPTS	+= scripts/remove-packages
+bin_SCRIPTS	+= scripts/_remove-packages
+bin_SCRIPTS	+= scripts/dont-remove-packages
 
 
 install-exec-hook:

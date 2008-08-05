@@ -7,16 +7,10 @@
 case "$1" in
 -u|"")	
 	# then finish the upgrade in unattended mode
-	echo "Please wait.  Now entering unattended mode."
-	echo "This will take a long time.  When done,"
-	echo "the system will automatically reboot."
 	(xes /opt/vyatta/bin/install-only;xes /opt/vyatta/bin/remove-packages)
 	;;
 -x)
 	# then finish the upgrade in unattended mode
-	echo "Please wait.  Now entering unattended mode."
-	echo "This will take a long time.  When done,"
-	echo "the system will automatically reboot."
 	(xes /opt/vyatta/bin/install-only;xes /opt/vyatta/bin/dont_remove-packages)
 	;;
 -c)

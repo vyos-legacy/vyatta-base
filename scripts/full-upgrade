@@ -35,6 +35,9 @@ case "$1" in
 		echo "If you want to proceed, then first rm -rf /tmp/full-upgrade."
 		exit 1
 	fi
+	echo "Please wait.  Now entering unattended mode."
+	echo "This will take a long time.  When done,"
+	echo "the system will automatically reboot."
 	hupfile=/root/nohup.out
 	>/root/full-upgrade.log
 	tail -f /root/full-upgrade.log&

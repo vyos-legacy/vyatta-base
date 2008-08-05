@@ -4,4 +4,4 @@
 # Date: 2007
 # Description:
 
-exec /opt/vyatta/bin/_remove-packages -x
+exec /opt/vyatta/bin/_remove-packages

@@ -4,12 +4,8 @@
 # Date: 2007
 # Description:
 
-if [ "$1" ]
-then
-	forceremove=
-else
-	forceremove=yes
-fi
+#if option -x is specified, dont force package removal
+[ "$1" ] || forceremove=yes
 
 which /opt/vyatta/bin/vyatta-show-version >/dev/null && /opt/vyatta/bin/vyatta-show-version all>/tmp/$$
 
@@ -59,3 +55,10 @@ n|N|[nN][oO] )
 esac
 fi
 
+echo You need to reboot the system to complete the upgrade
+echo -n "Reboot now? "
+read j
+case "$j" in
+y|Y|[yY][eE][sS] )
+	reboot;;
+esac
