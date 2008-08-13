@@ -46,10 +46,10 @@ apt-get $apt_args dist-upgrade | tee /tmp/upgrade$$
 if nothing_installed
 then
 	echo
-	echo System already upgraded to newest packages
+	echo Nothing upgraded
 	rm /tmp/install$$ /tmp/upgrade$$
 	apt-get $apt_args clean	# clean up the downloads in case we are close to full on root
-	exit 0
+	exit 1
 fi
 
 #rm -rf /tmp/install$$ /tmp/upgrade$$
