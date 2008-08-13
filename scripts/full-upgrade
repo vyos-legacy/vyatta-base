@@ -15,9 +15,18 @@ usage()
 	echo " -h: provide help and exit"
 }
 
-cd /tmp
+# Check for valid arguments; print help
+case "$1" in
+ -c )
+	;;
+ -u | -x  | "" )
+	;;
 
-#check-upgrade
+ * )
+	usage
+esac
+
+cd /tmp
 
 # first do the download:
 download-only || exit $?
