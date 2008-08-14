@@ -7,11 +7,11 @@
 case "$1" in
 -u|"")	
 	# then finish the upgrade in unattended mode
-	(xes /opt/vyatta/bin/install-only && xes /opt/vyatta/bin/remove-packages)
+	xes /opt/vyatta/bin/install-only && xes /opt/vyatta/bin/remove-packages
 	;;
 -x)
 	# then finish the upgrade in unattended mode
-	(xes /opt/vyatta/bin/install-only && xes /opt/vyatta/bin/dont_remove-packages)
+	xes /opt/vyatta/bin/install-only && sleep 20 && reboot
 	;;
 -c)
 	install-only && remove-packages

@@ -15,28 +15,16 @@ usage()
 	echo " -h: provide help and exit"
 }
 
-# Check for valid arguments; print help
-case "$1" in
- -c )
-	;;
- -u | -x  | "" )
-	;;
-
- * )
-	usage
-esac
-
 cd /tmp
 
-# first do the download:
-download-only || exit $?
-
 case "$1" in
  -c )
+	download-only || exit $?
 	/opt/vyatta/bin/_full-upgrade $*
 	;;
 
  -u | -x  | "" )
+	download-only || exit $?
 	if ! mkdir full-upgrade.lock
 	then
 		echo "full-upgrade can't acquire it's lock file (/tmp/full-upgrade)."
