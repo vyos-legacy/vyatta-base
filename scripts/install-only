@@ -30,7 +30,7 @@ sed '3icase "$1" in upgrade) exit 0;; esac' -i /var/lib/dpkg/info/vyatta-quagga.
 
 dpkg --configure -a
 apt-get $apt_args install
-apt-get $apt_args autoremove #??
+apt-get $apt_args autoremove
 apt-get $apt_args install
 
 install_list=`awk '{print $1}' /opt/vyatta/etc/deb-versions.txt|tr '\n' ' '`
@@ -52,12 +52,10 @@ then
 	exit 1
 fi
 
-#rm -rf /tmp/install$$ /tmp/upgrade$$
-#echo ====
-#echo "$install_list"
+rm -rf /tmp/install$$ /tmp/upgrade$$
 ##############################################################
 
-apt-get $apt_args autoremove # ??
+apt-get $apt_args autoremove
 apt-get $apt_args clean	# remove the downloads in case we are close to full on root
 
 ##### use UUID instead of device for grub
