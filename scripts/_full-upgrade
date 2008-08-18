@@ -5,15 +5,15 @@
 # Description:
 
 case "$1" in
--u|"")	
+-r)	
 	# then finish the upgrade in unattended mode
 	xes /opt/vyatta/bin/install-only && xes /opt/vyatta/bin/remove-packages
 	;;
--x)
+-k)
 	# then finish the upgrade in unattended mode
 	xes /opt/vyatta/bin/install-only
 	;;
--c)
+-i)
 	install-only && exec remove-packages
 	;;
 esac
@@ -25,7 +25,7 @@ then
 else
 	echo **** Upgrade terminated early
 	echo **** run dpkg -l to determine
-	echo **** the state of your system's
-	echo **** packages.
+	echo **** the state of the packages
+	echo **** on your system.
 	exit 1
 fi
