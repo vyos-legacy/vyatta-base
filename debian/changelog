@@ -1,3 +1,45 @@
+vyatta-base (0.10) unstable; urgency=low
+
+	  3.1.3
+  [ Mark O'Brien ]
+
+
+  [ rbalocca ]
+  * Fix as per http://bugzilla.vyatta.com/show_bug.cgi?id=3607
+  * Merge from islavista
+  * Put message in log if upgrade terminated early
+  * Cleanup
+  * Fix for http://bugzilla.vyatta.com/show_bug.cgi?id=3573 .
+  * Print help before doing the download
+  * Fix for bug http://bugzilla.vyatta.com/show_bug.cgi?id=3568
+  * Fixes for http://bugzilla.vyatta.com/show_bug.cgi?id=3496
+
+  [ Rick Balocca ]
+  * Additional fixes for http://bugzilla.vyatta.com/show_bug.cgi?id=3520
+  * Fix typo
+
+  [ rbalocca ]
+  * Fixes for: http://bugzilla.vyatta.com/show_bug.cgi?id=3520
+    http://bugzilla.vyatta.com/show_bug.cgi?id=3519
+    http://bugzilla.vyatta.com/show_bug.cgi?d for:
+    http://bugzilla.vyatta.com/show_bug.cgi?id=3520
+    http://bugzilla.vyatta.com/show_bug.cgi?id=3519
+    http://bugzilla.vyatta.com/show_bug.cgi?id=3518 and perhaps others
+
+  [ Rick Balocca ]
+  * Fixes for bug http://bugzilla.vyatta.com/show_bug.cgi?id=3496
+
+  [ rbalocca ]
+  * Fix for http://bugzilla.vyatta.com/show_bug.cgi?id=3522
+  * Add a script
+  * Fixes for bugs http://bugzilla.vyatta.com/show_bug.cgi?id=3262
+    http://bugzilla.vyatta.com/show_bug.cgi?id=3503
+    http://bugzilla.vyatta.com/show_bug.cgi?id=3502
+
+  [ Mark O'Brien ]
+
+ -- Mark O'Brien <mobrien@firebolt.vyatta.com>  Tue, 19 Aug 2008 17:48:21 -0700
+
 vyatta-base (0.9) unstable; urgency=low
 
 	  3.1.2
