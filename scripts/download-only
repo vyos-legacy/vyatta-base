@@ -23,6 +23,18 @@ dontkeep=yes
 download_only=yes
 export DEBIAN_FRONTEND="$df"
 
+# add pin priority for vyatta
+sed -i '/BEGIN VYATTA ENTRY/,/END VYATTA ENTRY/{d}' /etc/apt/preferences
+cat <<EOF >> /etc/apt/preferences
+
+Explanation: BEGIN VYATTA ENTRY
+Package: *
+Pin: release l=Vyatta
+Pin-Priority: 1000
+Explanation: END VYATTA ENTRY
+
+EOF
+
 # Find all vyatta packages to remove
 cd /tmp
 dpkg --configure -a
