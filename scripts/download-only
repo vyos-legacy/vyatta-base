@@ -24,6 +24,7 @@ download_only=yes
 export DEBIAN_FRONTEND="$df"
 
 # add pin priority for vyatta
+touch /etc/apt/preferences
 sed -i '/BEGIN VYATTA ENTRY/,/END VYATTA ENTRY/{d}' /etc/apt/preferences
 cat <<EOF >> /etc/apt/preferences
 
