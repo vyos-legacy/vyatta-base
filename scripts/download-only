@@ -27,13 +27,11 @@ export DEBIAN_FRONTEND="$df"
 touch /etc/apt/preferences
 sed -i '/BEGIN VYATTA ENTRY/,/END VYATTA ENTRY/{d}' /etc/apt/preferences
 cat <<EOF >> /etc/apt/preferences
-
-Explanation: BEGIN VYATTA ENTRY
+#Explanation: BEGIN VYATTA ENTRY
 Package: *
 Pin: release l=Vyatta
 Pin-Priority: 1000
-Explanation: END VYATTA ENTRY
-
+#Explanation: END VYATTA ENTRY
 EOF
 
 # Find all vyatta packages to remove
