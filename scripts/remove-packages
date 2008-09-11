@@ -32,10 +32,10 @@ do
 	echo $i
 done
 
-echo -n "Would you like to keep the extra packages listed above [Y/N]? "
+echo -n "Would you like to remove the extra packages listed above [Y/N]? "
 read j
 case "$j" in
-n|N|[nN][oO] )
+[yY]|[yY][eE][sS] )
 	apt-get --force-yes -y remove $l
 	;;
 *)

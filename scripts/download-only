@@ -40,10 +40,23 @@ dpkg --configure -a
 
 apt-get -y -f install
 
+checksum()
+{(
+	cd /opt/vyatta/bin
+	md5sum	check-upgrade \
+		download-only \
+		_full-upgrade \
+		full-upgrade \
+		install-only \
+		remove-packages \
+		save-package-report \
+		xes 2>/dev/null || true
+)}
+
 apt-get update
-md5sum /opt/vyatta/bin/full-upgrade 2>/dev/null >full-upgrade.md5 || true
 apt-get -y -f install vyatta-base
-if ! (md5sum /opt/vyatta/bin/full-upgrade | diff - full-upgrade.md5 >/dev/null)
+checksum >/tmp/full-upgrade.md5
+if ! (checksum | cmp - /tmp/full-upgrade.md5 >/dev/null)
 then
 	echo The full-upgrade script was not up to date.
 	echo The latest one has been downloaded and
@@ -52,7 +65,7 @@ then
 	exec /opt/vyatta/bin/full-upgrade $*
 fi
 
-rm -f full-upgrade.md5
+rm -f /tmp/full-upgrade.md5
 
 old_version=`grep '^Version' /opt/vyatta/etc/version|sed -e 's/.*[ 	]//'`
 new_version=`apt-get --dry-run install vyatta-version|grep '^Inst'|sed -e 's/.*(//' -e 's/ .*//'`
