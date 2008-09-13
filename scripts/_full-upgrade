@@ -11,18 +11,18 @@ case "$1" in
 	;;
 -k)
 	# then finish the upgrade in unattended mode
-	xes /opt/vyatta/bin/install-only
+	if xes /opt/vyatta/bin/install-only
+	then
+		sleep 20
+		reboot
+	fi
 	;;
 -i)
 	install-only && exec remove-packages
 	;;
 esac
 ret=$?
-if [ $ret -eq 0 ]
-then
-	sleep 20
-	reboot
-else
+if [ $ret -ne 0 ]
 	echo **** Upgrade terminated early
 	echo **** run dpkg -l to determine
 	echo **** the state of the packages

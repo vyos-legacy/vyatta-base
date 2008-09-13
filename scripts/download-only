@@ -61,7 +61,7 @@ then
 	echo The full-upgrade script was not up to date.
 	echo The latest one has been downloaded and
 	echo full-upgrade is being restarted.
-	rm -f full-upgrade.md5
+	rm -f /tmp/full-upgrade.md5
 	exec /opt/vyatta/bin/full-upgrade $*
 fi
 

@@ -49,3 +49,4 @@ case "$j" in
 y|Y|[yY][eE][sS] )
 	reboot;;
 esac
+exit
