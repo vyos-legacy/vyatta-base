@@ -23,6 +23,7 @@ case "$1" in
 esac
 ret=$?
 if [ $ret -ne 0 ]
+then
 	echo **** Upgrade terminated early
 	echo **** run dpkg -l to determine
 	echo **** the state of the packages

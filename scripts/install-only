@@ -66,4 +66,4 @@ then
 	grub_options=ide=nodma
 fi
 
-/opt/vyatta/sbin/grub-setup "$root_dev" "$grub_options" || echo WARNING: grub not completely setup.
+/opt/vyatta/sbin/vyatta-grub-setup "$root_dev" "$grub_options" || echo WARNING: grub not completely setup.
