@@ -11,8 +11,6 @@ usage()
 cat <<EOF
 $0 must be run with one of the following options:
   -h : Print help ( this help text )
-  -r : Remove all packages not part of the target Vyatta version.
-       All user-added packages will be removed.
   -k : Keep all packages not part of the target Vyatta version.
        Due to package dependencies some user added packages may not
         function properly.
@@ -31,7 +29,7 @@ case "$OPTION" in
 	/opt/vyatta/bin/_full-upgrade $OPTION
 	;;
 
- -r | -k  )
+ -k  )
 	download-only "$OPTION" || exit $?
 	if ! mkdir full-upgrade.lock
 	then

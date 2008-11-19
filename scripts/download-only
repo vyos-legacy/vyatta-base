@@ -92,17 +92,14 @@ apt-get -y -f install
 apt-get clean
 
 
+required=400
 free=`df /var/cache/apt/archives|tail -1|awk '{print $4}'`
-
-if [ "$free" -a "$free" -lt 400000 ]
+free=`expr "$free" / 1000`
+if [ "$free" -a "$free" -lt $required ]
 then
-	echo "There is not much free disk space for downloading a full upgrade."
-	echo "Shall I exit instead of proceeding [Y/n]?"
-	read j
-	case "$j" in
-	y|Y|[yY][eE][sS] )
-		exit 2
-	esac
+	echo "$required Megabytes required for full upgrade, but only $free available."
+	echo "Please free up more disk space and try again."
+	exit 2
 fi
 
 apt-get install vyatta-version
