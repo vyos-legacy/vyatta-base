@@ -1,87 +1,34 @@
-vyatta-base (0.10) unstable; urgency=low
+vyatta-base (0.11) unstable; urgency=low
 
-	  3.1.3
+	  200811192255.islavista
   [ Mark O'Brien ]
 
 
+  [ Rick Balocca ]
+  * Refuse to run less than 400 Megabytes free disk space;
+
   [ rbalocca ]
-  * Fix as per http://bugzilla.vyatta.com/show_bug.cgi?id=3607
-  * Merge from islavista
-  * Put message in log if upgrade terminated early
-  * Cleanup
-  * Fix for http://bugzilla.vyatta.com/show_bug.cgi?id=3573 .
-  * Print help before doing the download
-  * Fix for bug http://bugzilla.vyatta.com/show_bug.cgi?id=3568
-  * Fixes for http://bugzilla.vyatta.com/show_bug.cgi?id=3496
+  * Fix for bug http://bugzilla.vyatta.com/show_bug.cgi?id=3712
+  * Use the "Way Back Machine" to retrieve the full-upgrade option used
+    with the previous full-upgrade script
+  * Check all relevant files when deciding if the vyatta-base
 
   [ Rick Balocca ]
-  * Additional fixes for http://bugzilla.vyatta.com/show_bug.cgi?id=3520
-  * Fix typo
+  * Fix syntax error and size creep in /etc/apt/preferences
 
   [ rbalocca ]
-  * Fixes for: http://bugzilla.vyatta.com/show_bug.cgi?id=3520
-    http://bugzilla.vyatta.com/show_bug.cgi?id=3519
-    http://bugzilla.vyatta.com/show_bug.cgi?d for:
-    http://bugzilla.vyatta.com/show_bug.cgi?id=3520
-    http://bugzilla.vyatta.com/show_bug.cgi?id=3519
-    http://bugzilla.vyatta.com/show_bug.cgi?id=3518 and perhaps others
-
-  [ Rick Balocca ]
-  * Fixes for bug http://bugzilla.vyatta.com/show_bug.cgi?id=3496
-
-  [ rbalocca ]
-  * Fix for http://bugzilla.vyatta.com/show_bug.cgi?id=3522
-  * Add a script
-  * Fixes for bugs http://bugzilla.vyatta.com/show_bug.cgi?id=3262
-    http://bugzilla.vyatta.com/show_bug.cgi?id=3503
-    http://bugzilla.vyatta.com/show_bug.cgi?id=3502
-
-  [ Mark O'Brien ]
-
- -- Mark O'Brien <mobrien@firebolt.vyatta.com>  Tue, 19 Aug 2008 17:48:21 -0700
-
-vyatta-base (0.9) unstable; urgency=low
-
-	  3.1.2
-  [ Mark O'Brien ]
-
-
-  [ rbalocca ]
-  * More fixes for bug http://bugzilla.vyatta.com/show_bug.cgi?id=3417
-
-  [ Rick Balocca ]
-  * Move additional code from vyatta-cfg to fix bug
-    http://bugzilla.vyatta.com/show_bug.cgi?id=3417
-  * Fix for bug http://bugzilla.vyatta.com/show_bug.cgi?id=3417
-
-  [ rbalocca ]
-  * Remove unneeded informational messages
-  * Handle upgrading from community to supported
-
-  [ Rick Balocca ]
-  * Fix for bug http://bugzilla.vyatta.com/show_bug.cgi?id=3483
-  * Fix for bugs http://bugzilla.vyatta.com/show_bug.cgi?id=3487 and
-    http://bugzilla.vyatta.com/show_bug.cgi?id=3482
-
-  [ rbalocca ]
-  * Implement -c (console) option
-  * Set full-upgrade script to execute permission
-  * Allow full-upgrade to proceed regardless of dpkg question and loss
-    of connection
-  * Don't quote the install list
-  * Improve check for supported vs. community
-  * Fixes
-  * Add the null argument
-  * Add -x option to keep all packages not in the vyatta release
-  * Fixes for unattended upgrade
-  * Fix for bug http://bugzilla.vyatta.com/show_bug.cgi?id=2635
+  * Deal with the case where /etc/apt/preferences des not exist yet
 
   [ An-Cheng Huang ]
-  * fix for bug 3417: use UUID in grub config file
+  * make vyatta repo higher priority
 
-  [ Mark O'Brien ]
+  [ rbalocca ]
+  * Full upgrade now requires an option
+  * New help text
 
- -- Mark O'Brien <mobrien@firebolt.vyatta.com>  Wed, 23 Jul 2008 21:35:43 -0700
+  [  ]
+
+ --  <rbalocca@firebolt.vyatta.com>  Wed, 19 Nov 2008 15:22:32 -0800
 
 vyatta-base (0.8) unstable; urgency=low
 
