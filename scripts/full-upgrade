@@ -22,7 +22,7 @@ EOF
 cd /tmp
 
 OPTION="$1"
-[ "$OPTION" ] || OPTION=`ps l|grep 'full-upgrade -'|sed 's,.*full-upgrade ,,'`
+[ "$OPTION" ] || OPTION=`ps l|grep -v grep|grep 'full-upgrade -'|sed 's,.*full-upgrade ,,'`
 case "$OPTION" in
  -i )
 	download-only "$OPTION" || exit $?
