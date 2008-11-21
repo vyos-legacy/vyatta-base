@@ -54,8 +54,8 @@ checksum()
 )}
 
 apt-get update
-apt-get -y -f install vyatta-base
 checksum >/tmp/full-upgrade.md5
+apt-get -y -f install vyatta-base
 if ! (checksum | cmp - /tmp/full-upgrade.md5 >/dev/null)
 then
 	echo The full-upgrade script was not up to date.
