@@ -4,29 +4,32 @@
 # Date: 2007
 # Description:
 
+wait_for_reboot()
+{
+	sleep 20
+	reboot
+	sleep 99999
+}
+
 case "$1" in
 -r)	
 	# then finish the upgrade in unattended mode
-	xes /opt/vyatta/bin/install-only && xes /opt/vyatta/bin/remove-packages
+	xes /opt/vyatta/bin/install-only &&
+        xes /opt/vyatta/bin/remove-packages &&
+	wait_for_reboot
 	;;
 -k)
 	# then finish the upgrade in unattended mode
-	if xes /opt/vyatta/bin/install-only
-	then
-		sleep 20
-		reboot
-	fi
+	xes /opt/vyatta/bin/install-only &&
+	wait_for_reboot
 	;;
 -i)
 	install-only && exec remove-packages
 	;;
 esac
-ret=$?
-if [ $ret -ne 0 ]
-then
-	echo **** Upgrade terminated early
-	echo **** run dpkg -l to determine
-	echo **** the state of the packages
-	echo **** on your system.
-	exit 1
-fi
+
+echo **** Upgrade terminated early
+echo **** run dpkg -l to determine
+echo **** the state of the packages
+echo **** on your system.
+exit 1
