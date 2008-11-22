@@ -23,6 +23,9 @@ cd /tmp
 
 OPTION="$1"
 [ "$OPTION" ] || OPTION=`ps l|grep -v grep|grep 'full-upgrade -'|sed 's,.*full-upgrade ,,'`
+echo ===full-upgrade "$OPTION"===
+uptime
+date
 case "$OPTION" in
  -i )
 	download-only "$OPTION" || exit $?
@@ -42,14 +45,14 @@ case "$OPTION" in
 	echo "This will take a long time.  When done,"
 	echo "the system will automatically reboot."
 	hupfile=/root/nohup$$.out
-	rm /root/full-upgrade*
+	mkdir bak-$$
+	mv /root/full-upgrade* bak-$$/.
 	>/root/full-upgrade.log
-	ln -s /root/full-upgrade.log /root/full-upgrade$$.log
-	tail -f /root/full-upgrade$$.log&
+	tail -f /root/full-upgrade.log&
 	nohup /opt/vyatta/bin/_full-upgrade $OPTION>&$hupfile
 	sleep 10
 	cat /root/nohup$$.out
-	rm -rf full-upgrade.lock
+	rm -rf /tmp/full-upgrade.lock
 	;;
 
  * )

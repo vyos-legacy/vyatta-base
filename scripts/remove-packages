@@ -47,6 +47,8 @@ echo -n "Reboot now? "
 read j
 case "$j" in
 y|Y|[yY][eE][sS] )
-	reboot;;
+	reboot
+	sleep 99999
+	;;
 esac
 exit
