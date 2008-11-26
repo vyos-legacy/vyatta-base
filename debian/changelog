@@ -1,3 +1,40 @@
+vyatta-base (0.11) unstable; urgency=low
+
+	  3.2.0
+  [ Mark O'Brien ]
+
+
+  [ Rick Balocca ]
+  * Do not exit immediately after reboot.  Instead Wait for reboot to
+    complete.
+  * Revert "200811192255.islavista"
+  * Tighten the grep of ps for the full-upgrade option;
+  * 200811192255.islavista
+  * Refuse to run less than 400 Megabytes free disk space;
+
+  [ rbalocca ]
+  * Fix for bug http://bugzilla.vyatta.com/show_bug.cgi?id=3712
+  * Use the "Way Back Machine" to retrieve the full-upgrade option used
+    with the previous full-upgrade script
+  * Check all relevant files when deciding if the vyatta-base
+
+  [ Rick Balocca ]
+  * Fix syntax error and size creep in /etc/apt/preferences
+
+  [ rbalocca ]
+  * Deal with the case where /etc/apt/preferences des not exist yet
+
+  [ An-Cheng Huang ]
+  * make vyatta repo higher priority
+
+  [ rbalocca ]
+  * Full upgrade now requires an option
+  * New help text
+
+  [ Mark O'Brien ]
+
+ -- Mark O'Brien <mobrien@firebolt.vyatta.com>  Tue, 25 Nov 2008 19:08:31 -0800
+
 vyatta-base (0.10) unstable; urgency=low
 
 	  3.1.3
