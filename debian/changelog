@@ -1,3 +1,23 @@
+vyatta-base (0.11.1) unstable; urgency=low
+
+  [ An-Cheng Huang ]
+  * add support for development build
+
+  [ Rick Balocca ]
+  * Merge from islavista
+  * Re-implement "full-upgrade -r"
+
+  [ An-Cheng Huang ]
+  * update maintainer information
+  * "files" file should be removed before package build
+
+  [ Rick Balocca ]
+  * http://bugzilla.vyatta.com/show_bug.cgi?id=3986
+
+  [ An-Cheng Huang ]
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Thu, 08 Jan 2009 09:17:45 -0800
+
 vyatta-base (0.11) unstable; urgency=low
 
 	  3.2.0
