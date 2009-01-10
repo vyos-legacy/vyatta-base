@@ -1,9 +1,11 @@
-vyatta-base (0.11.1) unstable; urgency=low
+vyatta-base (0.12) unstable; urgency=low
 
   [ An-Cheng Huang ]
   * add support for development build
 
   [ Rick Balocca ]
+  * Update vyatta-base (that is, full-upgrade) before checking the
+    arguments
   * Merge from islavista
   * Re-implement "full-upgrade -r"
 

@@ -17,55 +17,12 @@ nothing_upgraded()
 }
 
 df=noninteractive
+export DEBIAN_FRONTEND="$df"
+
 unattended=yes
 netupgrade=-y
 dontkeep=yes
 download_only=yes
-export DEBIAN_FRONTEND="$df"
-
-# add pin priority for vyatta
-touch /etc/apt/preferences
-sed -i '/BEGIN VYATTA ENTRY/,/END VYATTA ENTRY/{d}' /etc/apt/preferences
-cat <<EOF >> /etc/apt/preferences
-#Explanation: BEGIN VYATTA ENTRY
-Package: *
-Pin: release l=Vyatta
-Pin-Priority: 1000
-#Explanation: END VYATTA ENTRY
-EOF
-
-# Find all vyatta packages to remove
-cd /tmp
-dpkg --configure -a
-
-apt-get -y -f install
-
-checksum()
-{(
-	cd /opt/vyatta/bin
-	md5sum	check-upgrade \
-		download-only \
-		_full-upgrade \
-		full-upgrade \
-		install-only \
-		remove-packages \
-		save-package-report \
-		xes 2>/dev/null || true
-)}
-
-apt-get update
-checksum >/tmp/full-upgrade.md5
-apt-get -y -f install vyatta-base
-if ! (checksum | cmp - /tmp/full-upgrade.md5 >/dev/null)
-then
-	echo The full-upgrade script was not up to date.
-	echo The latest one has been downloaded and
-	echo full-upgrade is being restarted.
-	rm -f /tmp/full-upgrade.md5
-	exec /opt/vyatta/bin/full-upgrade $*
-fi
-
-rm -f /tmp/full-upgrade.md5
 
 old_version=`grep '^Version' /opt/vyatta/etc/version|sed -e 's/.*[ 	]//'`
 new_version=`apt-get --dry-run install vyatta-version|grep '^Inst'|sed -e 's/.*(//' -e 's/ .*//'`
@@ -87,6 +44,7 @@ case "$old_version" in
 	;;
 esac
 
+# Find all vyatta packages to remove
 apt-get $netupgrade -f autoremove #??
 apt-get -y -f install
 apt-get clean

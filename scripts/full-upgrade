@@ -22,6 +22,7 @@ EOF
 }
 
 cd /tmp
+check-upgrade $*
 
 OPTION="$1"
 [ "$OPTION" ] || OPTION=`ps l|grep -v grep|grep 'full-upgrade -'|sed 's,.*full-upgrade ,,'`
