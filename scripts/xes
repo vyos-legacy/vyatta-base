@@ -2,7 +2,7 @@
 
 trap exit { SIGCHLD }
 
-# set timeout 99
+set timeout 99
 
 log_user 0
 log_file -a /root/full-upgrade.log
@@ -10,6 +10,6 @@ log_file -a /root/full-upgrade.log
 spawn $argv
 
 for {} 1 {} {
-	expect "*\\?" { send "Y\r" } eof { exit }
-	expect_tty "*\\?" { send Y\r } eof { exit }
+	expect "*\\?" { send "Y\r" } timeout { send "Y\r" } eof { exit }
+	expect_tty "*\\?" { send Y\r } timeout { send "Y\r" } eof { exit }
 }
