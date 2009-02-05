@@ -4,6 +4,8 @@
 # Date: 2007
 # Description:
 
+XES="/opt/vyatta/bin/xes"
+
 wait_for_reboot()
 {
 	sleep 20
@@ -14,13 +16,13 @@ wait_for_reboot()
 case "$1" in
 -r)	
 	# then finish the upgrade in unattended mode
-	xes /opt/vyatta/bin/install-only &&
-        xes /opt/vyatta/bin/remove-packages &&
+	${XES} /opt/vyatta/bin/install-only &&
+        ${XES} /opt/vyatta/bin/remove-packages &&
 	wait_for_reboot
 	;;
 -k)
 	# then finish the upgrade in unattended mode
-	xes /opt/vyatta/bin/install-only &&
+	${XES} /opt/vyatta/bin/install-only &&
 	wait_for_reboot
 	;;
 -i)
