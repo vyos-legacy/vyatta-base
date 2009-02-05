@@ -1,3 +1,13 @@
+vyatta-base (0.14) unstable; urgency=low
+
+  [ Rick Balocca ]
+  * Add timeout to full-upgrade's expect script
+
+  [ mobrien ]
+  * * parameterize location of xes script
+
+ -- mobrien <mobrien@R4deb.vyatta.com>  Wed, 04 Feb 2009 20:53:00 -0800
+
 vyatta-base (0.13) unstable; urgency=low
 
   * jenner version
