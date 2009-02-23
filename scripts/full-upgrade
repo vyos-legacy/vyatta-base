@@ -11,8 +11,6 @@ usage()
 cat <<EOF
 $0 must be run with one of the following options:
   -h : Print help ( this help text )
-  -r : Remove all packages not part of the target Vyatta version.
-       All user-added packages will be removed.
   -k : Keep all packages not part of the target Vyatta version.
        Due to package dependencies some user added packages may not
         function properly.
@@ -32,7 +30,7 @@ case "$OPTION" in
 	/opt/vyatta/bin/_full-upgrade $OPTION
 	;;
 
- -r | -k  )
+ -k )
 	echo ===full-upgrade "$OPTION"===
 	uptime
 	date
@@ -60,5 +58,15 @@ case "$OPTION" in
 
  * )
 	usage
+	# need to kill parent full-upgrade process to prevent it from running
+	array=(`ps ax | grep full-upgrade | grep -v grep | awk {'print $1'}`)
+	len=${#array[*]}
+	i=0
+	while [ $i -lt $len ]; do
+	 if [ "${array[$i]}" != "$$" ]; then
+	  kill -9 ${array[$i]} > /dev/null 2>&1
+	 fi
+	 let i++
+	done
 	exit
 esac
