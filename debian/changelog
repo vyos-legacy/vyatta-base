@@ -1,6 +1,19 @@
+vyatta-base (0.12+islavista2) unstable; urgency=low
+
+	  3.3.1
+  [ Mark O'Brien ]
+
+
+  [ Mohit Mehta ]
+  * * make -r inaccessible to the user
+
+  [ Mark O'Brien ]
+
+ -- Mark O'Brien <mobrien@firebolt.vyatta.com>  Wed, 25 Feb 2009 18:25:24 -0800
+
 vyatta-base (0.12+islavista1) unstable; urgency=low
 
-  * UNRELEASED
+
 
  -- An-Cheng Huang <ancheng@vyatta.com>  Mon, 12 Jan 2009 16:22:52 -0800
 
