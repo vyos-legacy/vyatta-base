@@ -16,6 +16,39 @@ nothing_upgraded()
 	grep "$PATTERN" /tmp/install$$ && grep "$PATTERN" /tmp/upgrade$$
 }
 
+prevent_start_on_install()
+{
+if [ -f /usr/sbin/policy-rc.d ]
+ then
+  # Save policy-rc.d file
+  mv /usr/sbin/policy-rc.d /usr/sbin/policy-rc.d.orig
+fi
+
+# Create policy-rc.d file
+cat > /usr/sbin/policy-rc.d << EOF
+#!/bin/sh
+
+echo
+echo "PREVENT DAEMONS FROM STARTING DURING UPGRADE"
+
+exit 101
+EOF
+
+chmod 0755 /usr/sbin/policy-rc.d
+}
+
+revert_to_default_policy()
+{
+if [ -f /usr/sbin/policy-rc.d.orig ]
+ then
+  # Restore policy-rc.d file
+  mv /usr/sbin/policy-rc.d.orig /usr/sbin/policy-rc.d
+ else
+  # Remove policy-rc.d file
+  rm -f /usr/sbin/policy-rc.d
+fi
+}
+
 df=noninteractive
 unattended=yes
 netupgrade=-y
@@ -40,8 +73,10 @@ then
 	exit 1
 fi
 
+prevent_start_on_install
 apt-get $apt_args install $install_list | tee /tmp/install$$
 apt-get $apt_args dist-upgrade | tee /tmp/upgrade$$
+revert_to_default_policy
 
 if nothing_installed
 then
