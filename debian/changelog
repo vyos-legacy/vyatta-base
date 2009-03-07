@@ -1,3 +1,11 @@
+vyatta-base (0.15) unstable; urgency=low
+
+  * cherrypicked from islavista
+  * 4176 During full-upgrade, the SSH server gets enabled, perhaps other
+    services?
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Fri, 06 Mar 2009 18:58:29 -0800
+
 vyatta-base (0.14) unstable; urgency=low
 
   [ Rick Balocca ]
