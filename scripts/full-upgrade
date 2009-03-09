@@ -19,6 +19,21 @@ $0 must be run with one of the following options:
 EOF
 }
 
+stop_parent_fullupgrade() {
+ # need to stop parent full-upgrade script if one exists
+ array=(`ps ax | grep full-upgrade | grep -v grep | awk {'print $1'}`)
+ len=${#array[*]}
+ i=0
+ while [ $i -lt $len ]; do
+  if [ "${array[$i]}" != "$$" ]; then
+   kill -9 ${array[$i]} > /dev/null 2>&1
+  fi
+ let i++
+ done
+}
+
+trap stop_parent_fullupgrade INT TERM EXIT
+
 cd /tmp
 check-upgrade $*
 
@@ -58,15 +73,5 @@ case "$OPTION" in
 
  * )
 	usage
-	# need to kill parent full-upgrade process to prevent it from running
-	array=(`ps ax | grep full-upgrade | grep -v grep | awk {'print $1'}`)
-	len=${#array[*]}
-	i=0
-	while [ $i -lt $len ]; do
-	 if [ "${array[$i]}" != "$$" ]; then
-	  kill -9 ${array[$i]} > /dev/null 2>&1
-	 fi
-	 let i++
-	done
-	exit
+	exit 1
 esac
