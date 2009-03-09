@@ -1,3 +1,10 @@
+vyatta-base (0.16) unstable; urgency=low
+
+  * stop parent full-upgrade process if child full-upgrade process
+    exits/terminates
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Mon, 09 Mar 2009 15:48:29 -0700
+
 vyatta-base (0.15) unstable; urgency=low
 
   * cherrypicked from islavista
