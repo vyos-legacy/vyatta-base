@@ -1,3 +1,9 @@
+vyatta-base (0.17) unstable; urgency=low
+
+  * Print messages to tell what full-upgrade is currently doing
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Mon, 09 Mar 2009 19:16:48 -0700
+
 vyatta-base (0.16) unstable; urgency=low
 
   * stop parent full-upgrade process if child full-upgrade process
