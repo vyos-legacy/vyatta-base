@@ -7,6 +7,7 @@
 df=noninteractive
 export DEBIAN_FRONTEND="$df"
 
+echo "Vyatta full-upgrade status - Setting pin priority"
 # add pin priority for vyatta
 touch /etc/apt/preferences
 sed -i '/BEGIN VYATTA ENTRY/,/END VYATTA ENTRY/{d}' /etc/apt/preferences
@@ -19,8 +20,10 @@ Pin-Priority: 1000
 EOF
 
 cd /tmp
+echo "Vyatta full-upgrade status - Configuring unpacked packages"
 dpkg --configure -a
 
+echo "Vyatta full-upgrade status - Fixing any broken package dependencies"
 apt-get -y -f install
 
 checksum()
@@ -36,8 +39,10 @@ checksum()
 		xes 2>/dev/null || true
 )}
 
+echo "Vyatta full-upgrade status - Resynchronizing package index files"
 apt-get update
 checksum >/tmp/full-upgrade.md5
+echo "Vyatta full-upgrade status - Installing latest Vyatta-base package"
 apt-get -y -f install vyatta-base
 if ! (checksum | cmp - /tmp/full-upgrade.md5 >/dev/null)
 then

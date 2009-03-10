@@ -45,8 +45,11 @@ case "$old_version" in
 esac
 
 # Find all vyatta packages to remove
+echo "Vyatta full-upgrade status - Removing no longer needed dependencies"
 apt-get $netupgrade -f autoremove #??
+echo "Vyatta full-upgrade status - Fixing any broken depedencies"
 apt-get -y -f install
+echo "Vyatta full-upgrade status - Cleaning local repository of retrieved package files"
 apt-get clean
 
 
@@ -60,6 +63,7 @@ then
 	exit 2
 fi
 
+echo "Vyatta full-upgrade status - Installing vyatta-version package"
 apt-get install vyatta-version
 
 #apt-cache dumpavail|grep '^Package.*vyatta' |grep -v '^Package.*linux-header'| sed 's/Package:  *//'|tr '\n' ' '>/tmp/$$ || true
@@ -82,8 +86,10 @@ then
 	echo
 	echo Nothing upgraded
 	rm /tmp/install$$ /tmp/upgrade$$
+	echo "Vyatta full-upgrade status - Cleaning local repository of retrieved package files"
 	apt-get clean	# clean up the downloads in case we are close to full on root
 	exit 1
 fi
 
+echo "Vyatta full-upgrade status - Download complete"
 #rm -rf /tmp/install$$ /tmp/upgrade$$

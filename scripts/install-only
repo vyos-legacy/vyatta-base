@@ -61,9 +61,13 @@ apt_args="$apt_args"
 cd /tmp
 sed '3icase "$1" in upgrade) exit 0;; esac' -i /var/lib/dpkg/info/vyatta-quagga.prerm 2>/dev/null || true
 
+echo "Vyatta full-upgrade status - Configuring unpacked packages"
 dpkg --configure -a
+echo "Vyatta full-upgrade status - Fixing any broken depedencies"
 apt-get $apt_args install
+echo "Vyatta full-upgrade status - Removing no longer needed dependencies"
 apt-get $apt_args autoremove
+echo "Vyatta full-upgrade status - Fixing any broken depedencies"
 apt-get $apt_args install
 
 install_list=`awk '{print $1}' /opt/vyatta/etc/deb-versions.txt|tr '\n' ' '`
@@ -74,7 +78,9 @@ then
 fi
 
 prevent_start_on_install
+echo "Vyatta full-upgrade status - Install retrieved packages"
 apt-get $apt_args install $install_list | tee /tmp/install$$
+echo "Vyatta full-upgrade status - Upgrade packages and handle dependencies"
 apt-get $apt_args dist-upgrade | tee /tmp/upgrade$$
 revert_to_default_policy
 
@@ -90,7 +96,11 @@ fi
 rm -rf /tmp/install$$ /tmp/upgrade$$
 ##############################################################
 
+echo "Vyatta full-upgrade status - Installed packages from new version"
+
+echo "Vyatta full-upgrade status - Removing no longer needed dependencies"
 apt-get $apt_args autoremove
+echo "Vyatta full-upgrade status - Cleaning local repository of retrieved package files"
 apt-get $apt_args clean	# remove the downloads in case we are close to full on root
 
 ##### use UUID instead of device for grub
@@ -101,4 +111,6 @@ then
 	grub_options=ide=nodma
 fi
 
+echo "Vyatta full-upgrade status - Setting up grub"
 /opt/vyatta/sbin/vyatta-grub-setup "$root_dev" "$grub_options" || echo WARNING: grub not completely setup.
+echo "Vyatta full-upgrade status - Completed grub setup"
