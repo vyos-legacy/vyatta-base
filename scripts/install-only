@@ -69,6 +69,8 @@ echo "Vyatta full-upgrade status - Fixing any broken depedencies"
 apt-get $apt_args install
 echo "Vyatta full-upgrade status - Removing no longer needed dependencies"
 apt-get $apt_args autoremove
+echo "Vyatta full-upgrade status - Fixing any broken depedencies"
+apt-get $apt_args install
 
 install_list=`awk '{print $1}' /opt/vyatta/etc/deb-versions.txt|tr '\n' ' '`
 if [ ! "$install_list" ]
@@ -96,6 +98,8 @@ rm -rf /tmp/install$$ /tmp/upgrade$$
 ##############################################################
 
 echo "Vyatta full-upgrade status - Installed packages from new version"
+echo "Vyatta full-upgrade status - Fixing any broken depedencies"
+apt-get $apt_args install
 
 echo "Vyatta full-upgrade status - Removing no longer needed dependencies"
 apt-get $apt_args autoremove
