@@ -49,13 +49,15 @@ if [ -f /usr/sbin/policy-rc.d.orig ]
 fi
 }
 
+trap revert_to_default_policy INT TERM EXIT
+
 df=noninteractive
 unattended=yes
 netupgrade=-y
 dontkeep=yes
 download_only=yes
 export DEBIAN_FRONTEND="$df"
-apt_args="$apt_args"
+apt_args=" -y -f "
 
 # Find all vyatta packages to remove
 cd /tmp
@@ -67,8 +69,6 @@ echo "Vyatta full-upgrade status - Fixing any broken depedencies"
 apt-get $apt_args install
 echo "Vyatta full-upgrade status - Removing no longer needed dependencies"
 apt-get $apt_args autoremove
-echo "Vyatta full-upgrade status - Fixing any broken depedencies"
-apt-get $apt_args install
 
 install_list=`awk '{print $1}' /opt/vyatta/etc/deb-versions.txt|tr '\n' ' '`
 if [ ! "$install_list" ]
@@ -82,14 +82,13 @@ echo "Vyatta full-upgrade status - Install retrieved packages"
 apt-get $apt_args install $install_list | tee /tmp/install$$
 echo "Vyatta full-upgrade status - Upgrade packages and handle dependencies"
 apt-get $apt_args dist-upgrade | tee /tmp/upgrade$$
-revert_to_default_policy
 
 if nothing_installed
 then
 	echo
 	echo Nothing upgraded
 	rm /tmp/install$$ /tmp/upgrade$$
-	apt-get $apt_args clean	# clean up the downloads in case we are close to full on root
+	apt-get clean	# clean up the downloads in case we are close to full on root
 	exit 1
 fi
 
@@ -101,7 +100,7 @@ echo "Vyatta full-upgrade status - Installed packages from new version"
 echo "Vyatta full-upgrade status - Removing no longer needed dependencies"
 apt-get $apt_args autoremove
 echo "Vyatta full-upgrade status - Cleaning local repository of retrieved package files"
-apt-get $apt_args clean	# remove the downloads in case we are close to full on root
+apt-get clean	# remove the downloads in case we are close to full on root
 
 ##### use UUID instead of device for grub
 root_dev=$(mount | grep ' on / type ' | cut -f 1 -d ' '|sed 's,/dev/,,')
