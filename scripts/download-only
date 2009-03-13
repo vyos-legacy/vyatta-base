@@ -16,16 +16,59 @@ nothing_upgraded()
 	grep "$PATTERN" /tmp/install$$ && grep "$PATTERN" /tmp/upgrade$$
 }
 
+# this removes vyatta-built pkgs that have a lower version in new release
+remove_2Bdowngraded_pkgs() {
+
+ echo Vyatta full-upgrade status - Checking Vyatta packages that need to be downgraded
+ vyatta_pkgs_list=/tmp/$$latest-vyatta-packages.txt
+
+ # get list of all vyatta-built packages i.e. packages with
+ # vyatta in either name or version of package
+ cat /opt/vyatta/etc/deb-versions.txt | grep vyatta > $vyatta_pkgs_list
+
+ package_names=(`cat $vyatta_pkgs_list | awk {'print $1'}`)
+ package_versions=(`cat $vyatta_pkgs_list | awk {'print $2'}`)
+
+ num_package_names=${#package_names[*]}
+ num_package_versions=${#package_versions[*]}
+
+ if [ "$num_package_names" != "$num_package_versions" ]; then
+  echo number of names not equal to number of versions in temp file
+  exit 1
+ fi
+
+ rm_pkgs_list=""
+ i=0
+ while [ $i -lt $num_package_names ]; do
+  # get current version for package
+  current_pkg_ver=`dpkg -s ${package_names[$i]} 2>/dev/null \
+		| grep Version | awk {'print $2'}`
+  # check if version in new release is less then current version
+  dpkg --compare-versions ${package_versions[$i]} lt \
+			$current_pkg_ver >/dev/null 2>&1
+  if [ `echo $?` == 0 ]; then
+   echo package ${package_names[$i]} needs to be removed for downgrade
+   rm_pkgs_list=$rm_pkgs_list" "${package_names[$i]}
+  fi
+  let i++
+ done
+
+ # remove packages
+ if [ "$rm_pkgs_list" != "" ]; then
+  dpkg --force-depends --remove $rm_pkgs_list
+ else
+  echo Vyatta full-upgrade status - No packages to be downgraded
+ fi
+ rm -f $vyatta_pkgs_list
+
+}
+
 df=noninteractive
 export DEBIAN_FRONTEND="$df"
 
-unattended=yes
-netupgrade=-y
-dontkeep=yes
-download_only=yes
-
 old_version=`grep '^Version' /opt/vyatta/etc/version|sed -e 's/.*[ 	]//'`
 new_version=`apt-get --dry-run install vyatta-version|grep '^Inst'|sed -e 's/.*(//' -e 's/ .*//'`
+
 case "$old_version" in 
 [0-9]* )
 	case "$new_version" in
@@ -38,15 +81,27 @@ case "$old_version" in
 * )
 	case "$new_version" in
 	[0-9]* | "" )
+		# if user upgrading from community to subscription then
+		# new version is smaller than current version and thus,
+		# apt-get reply "vyatta-version is already the newest version" 
+		# Remove it now to install vyatta-version package later
 		apt-get -y remove vyatta-version
 		;;
 	esac
 	;;
 esac
 
+# now you should be able to install the new vyatta-version in any case
+new_version=`apt-get --dry-run install vyatta-version|grep '^Inst'|sed -e 's/.*(//' -e 's/ .*//'`
+# if new_version is empty now then don't proceed
+if [ -z "$new_version" ]; then
+ echo ERROR: Unable to retrieve latest vyatta-version package
+ exit 1
+fi
+
 # Find all vyatta packages to remove
 echo "Vyatta full-upgrade status - Removing no longer needed dependencies"
-apt-get $netupgrade -f autoremove #??
+apt-get -y -f autoremove
 echo "Vyatta full-upgrade status - Fixing any broken depedencies"
 apt-get -y -f install
 echo "Vyatta full-upgrade status - Cleaning local repository of retrieved package files"
@@ -66,8 +121,12 @@ fi
 echo "Vyatta full-upgrade status - Installing vyatta-version package"
 apt-get install vyatta-version
 
-#apt-cache dumpavail|grep '^Package.*vyatta' |grep -v '^Package.*linux-header'| sed 's/Package:  *//'|tr '\n' ' '>/tmp/$$ || true
-#install_list=`cat /tmp/$$`
+# Check that the installed version matches new version retrieved earlier
+current_version=`grep '^Version' /opt/vyatta/etc/version|sed -e 's/.*[      ]//'`
+if [ "$current_version" != "$new_version" ]; then 
+ echo ERROR: Retrieved and Installed vyatta-version packages don't match
+ exit 1
+fi
 
 install_list=`awk '{print $1}' /opt/vyatta/etc/deb-versions.txt|tr '\n' ' '`
 
@@ -77,7 +136,10 @@ then
 	exit 1
 fi
 
-echo Downloading updates.  This may take a few minutes...
+remove_2Bdowngraded_pkgs
+
+echo "Vyatta full-upgrade status - Downloading updates..."
+echo "Vyatta full-upgrade status - This may take a few minutes..."
 apt-get -y -f -d install $install_list | tee /tmp/install$$
 apt-get -y -f -d dist-upgrade | tee /tmp/upgrade$$
 

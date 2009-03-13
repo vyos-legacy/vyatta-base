@@ -52,10 +52,6 @@ fi
 trap revert_to_default_policy INT TERM EXIT
 
 df=noninteractive
-unattended=yes
-netupgrade=-y
-dontkeep=yes
-download_only=yes
 export DEBIAN_FRONTEND="$df"
 apt_args=" -y -f "
 
@@ -100,7 +96,6 @@ rm -rf /tmp/install$$ /tmp/upgrade$$
 echo "Vyatta full-upgrade status - Installed packages from new version"
 echo "Vyatta full-upgrade status - Fixing any broken depedencies"
 apt-get $apt_args install
-
 echo "Vyatta full-upgrade status - Removing no longer needed dependencies"
 apt-get $apt_args autoremove
 echo "Vyatta full-upgrade status - Cleaning local repository of retrieved package files"
