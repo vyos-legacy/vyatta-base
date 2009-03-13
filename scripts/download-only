@@ -39,6 +39,8 @@ remove_2Bdowngraded_pkgs() {
 
  rm_pkgs_list=""
  i=0
+ # unset 'exit on non-true value' mode as comparing versions below
+ set +e
  while [ $i -lt $num_package_names ]; do
   # get current version for package
   current_pkg_ver=`dpkg -s ${package_names[$i]} 2>/dev/null \
@@ -52,7 +54,9 @@ remove_2Bdowngraded_pkgs() {
   fi
   let i++
  done
-
+ # reset to global 'exit on non-true value' mode
+ set -e
+ 
  # remove packages
  if [ "$rm_pkgs_list" != "" ]; then
   dpkg --force-depends --remove $rm_pkgs_list
@@ -95,8 +99,12 @@ esac
 new_version=`apt-get --dry-run install vyatta-version|grep '^Inst'|sed -e 's/.*(//' -e 's/ .*//'`
 # if new_version is empty now then don't proceed
 if [ -z "$new_version" ]; then
- echo ERROR: Unable to retrieve latest vyatta-version package
- exit 1
+ already_new_version=`apt-get --dry-run install vyatta-version | \
+		grep 'vyatta-version is already the newest version'`
+ if [ -z "$already_new_version" ]; then
+  echo ERROR: Unable to retrieve latest vyatta-version package
+  exit 1
+ fi
 fi
 
 # Find all vyatta packages to remove
@@ -120,13 +128,6 @@ fi
 
 echo "Vyatta full-upgrade status - Installing vyatta-version package"
 apt-get install vyatta-version
-
-# Check that the installed version matches new version retrieved earlier
-current_version=`grep '^Version' /opt/vyatta/etc/version|sed -e 's/.*[      ]//'`
-if [ "$current_version" != "$new_version" ]; then 
- echo ERROR: Retrieved and Installed vyatta-version packages don't match
- exit 1
-fi
 
 install_list=`awk '{print $1}' /opt/vyatta/etc/deb-versions.txt|tr '\n' ' '`
 
