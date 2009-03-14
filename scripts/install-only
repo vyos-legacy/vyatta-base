@@ -59,6 +59,8 @@ apt_args=" -y -f "
 cd /tmp
 sed '3icase "$1" in upgrade) exit 0;; esac' -i /var/lib/dpkg/info/vyatta-quagga.prerm 2>/dev/null || true
 
+prevent_start_on_install
+
 echo "Vyatta full-upgrade status - Configuring unpacked packages"
 dpkg --configure -a
 echo "Vyatta full-upgrade status - Fixing any broken depedencies"
@@ -75,7 +77,6 @@ then
 	exit 1
 fi
 
-prevent_start_on_install
 echo "Vyatta full-upgrade status - Install retrieved packages"
 apt-get $apt_args install $install_list | tee /tmp/install$$
 echo "Vyatta full-upgrade status - Upgrade packages and handle dependencies"
