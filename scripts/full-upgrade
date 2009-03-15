@@ -67,6 +67,11 @@ check_repo() {
 # check if you have more than one repo configured in sources.list
 # if yes, advise user and ask if user wishes to continue?
 num_repos=`cat /etc/apt/sources.list | awk {'print $1'} | grep "^deb$" | wc -l`
+if [ "$num_repos" == "0" ]; then
+ echo No repository configured to retrieve packages
+ exit 1
+fi
+
 if [ "$num_repos" -gt "1" ]; then
  response=''
  while [ -z "$response" ]
