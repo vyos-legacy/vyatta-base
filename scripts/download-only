@@ -4,6 +4,8 @@
 # Date: 2007
 # Description:
 
+stars="*******************************************************************************"
+
 nothing_installed()
 {
 	PATTERN='\<0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.'
@@ -19,7 +21,7 @@ nothing_upgraded()
 # this removes vyatta-built pkgs that have a lower version in new release
 remove_2Bdowngraded_pkgs() {
 
- echo Vyatta full-upgrade status - Checking Vyatta packages that need to be downgraded
+ echo -e "$stars\nVyatta full-upgrade status - Checking Vyatta packages that need to be downgraded"
  vyatta_pkgs_list=/tmp/$$latest-vyatta-packages.txt
 
  # get list of all vyatta-built packages i.e. packages with
@@ -108,11 +110,11 @@ if [ -z "$new_version" ]; then
 fi
 
 # Find all vyatta packages to remove
-echo "Vyatta full-upgrade status - Removing no longer needed dependencies"
+echo -e "$stars\nVyatta full-upgrade status - Removing no longer needed dependencies"
 apt-get -y -f autoremove
-echo "Vyatta full-upgrade status - Fixing any broken depedencies"
+echo -e "$stars\nVyatta full-upgrade status - Fixing any broken depedencies"
 apt-get -y -f install
-echo "Vyatta full-upgrade status - Cleaning local repository of retrieved package files"
+echo -e "$stars\nVyatta full-upgrade status - Cleaning local repository of retrieved package files"
 apt-get clean
 
 
@@ -126,7 +128,7 @@ then
 	exit 2
 fi
 
-echo "Vyatta full-upgrade status - Installing vyatta-version package"
+echo -e "$stars\nVyatta full-upgrade status - Installing vyatta-version package"
 apt-get install vyatta-version
 
 install_list=`awk '{print $1}' /opt/vyatta/etc/deb-versions.txt|tr '\n' ' '`
@@ -138,8 +140,10 @@ then
 fi
 
 remove_2Bdowngraded_pkgs
+echo -e "$stars\nVyatta full-upgrade status - Fixing any broken depedencies"
+apt-get -y -f install
 
-echo "Vyatta full-upgrade status - Downloading updates..."
+echo -e "$stars\nVyatta full-upgrade status - Downloading updates..."
 echo "Vyatta full-upgrade status - This may take a few minutes..."
 apt-get -y -f -d install $install_list | tee /tmp/install$$
 apt-get -y -f -d dist-upgrade | tee /tmp/upgrade$$
@@ -154,5 +158,5 @@ then
 	exit 1
 fi
 
-echo "Vyatta full-upgrade status - Download complete"
+echo -e "Vyatta full-upgrade status - Download complete\n$stars"
 #rm -rf /tmp/install$$ /tmp/upgrade$$

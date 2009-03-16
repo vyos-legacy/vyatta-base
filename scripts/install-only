@@ -4,6 +4,8 @@
 # Date: 2007
 # Description:
 
+stars="*******************************************************************************"
+
 nothing_installed()
 {
 	PATTERN='\<0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.'
@@ -60,11 +62,11 @@ sed '3icase "$1" in upgrade) exit 0;; esac' -i /var/lib/dpkg/info/vyatta-quagga.
 
 prevent_start_on_install
 
-echo "Vyatta full-upgrade status - Configuring unpacked packages"
+echo -e "$stars\nVyatta full-upgrade status - Configuring unpacked packages"
 dpkg --configure -a
-echo "Vyatta full-upgrade status - Fixing any broken depedencies"
+echo -e "$stars\nVyatta full-upgrade status - Fixing any broken depedencies"
 apt-get -f install
-echo "Vyatta full-upgrade status - Removing no longer needed dependencies"
+echo -e "$stars\nVyatta full-upgrade status - Removing no longer needed dependencies"
 apt-get -f autoremove
 
 install_list=`awk '{print $1}' /opt/vyatta/etc/deb-versions.txt|tr '\n' ' '`
@@ -74,9 +76,9 @@ then
 	exit 1
 fi
 
-echo "Vyatta full-upgrade status - Install retrieved packages"
+echo -e "$stars\nVyatta full-upgrade status - Install retrieved packages"
 apt-get -f install $install_list | tee /tmp/install$$
-echo "Vyatta full-upgrade status - Upgrade packages and handle dependencies"
+echo -e "$stars\nVyatta full-upgrade status - Upgrade packages and handle dependencies"
 apt-get dist-upgrade | tee /tmp/upgrade$$
 
 if nothing_installed
@@ -91,12 +93,12 @@ fi
 rm -rf /tmp/install$$ /tmp/upgrade$$
 ##############################################################
 
-echo "Vyatta full-upgrade status - Installed packages from new version"
-echo "Vyatta full-upgrade status - Fixing any broken depedencies"
+echo -e "$stars\nVyatta full-upgrade status - Installed packages from new version"
+echo -e "$stars\nVyatta full-upgrade status - Fixing any broken depedencies"
 apt-get -f install
-echo "Vyatta full-upgrade status - Removing no longer needed dependencies"
+echo -e "$stars\nVyatta full-upgrade status - Removing no longer needed dependencies"
 apt-get -f autoremove
-echo "Vyatta full-upgrade status - Cleaning local repository of retrieved package files"
+echo -e "$stars\nVyatta full-upgrade status - Cleaning local repository of retrieved package files"
 apt-get clean	# remove the downloads in case we are close to full on root
 
 ##### use UUID instead of device for grub
@@ -107,6 +109,6 @@ then
 	grub_options=ide=nodma
 fi
 
-echo "Vyatta full-upgrade status - Setting up grub"
+echo -e "$stars\nVyatta full-upgrade status - Setting up grub"
 /opt/vyatta/sbin/vyatta-grub-setup "$root_dev" "$grub_options" || echo WARNING: grub not completely setup.
-echo "Vyatta full-upgrade status - Completed grub setup"
+echo -e "$stars\nVyatta full-upgrade status - Completed grub setup"
