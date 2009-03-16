@@ -53,7 +53,6 @@ trap revert_to_default_policy INT TERM EXIT
 
 df=noninteractive
 export DEBIAN_FRONTEND="$df"
-apt_args=" -y -f "
 
 # Find all vyatta packages to remove
 cd /tmp
@@ -64,11 +63,9 @@ prevent_start_on_install
 echo "Vyatta full-upgrade status - Configuring unpacked packages"
 dpkg --configure -a
 echo "Vyatta full-upgrade status - Fixing any broken depedencies"
-apt-get $apt_args install
+apt-get -f install
 echo "Vyatta full-upgrade status - Removing no longer needed dependencies"
-apt-get $apt_args autoremove
-echo "Vyatta full-upgrade status - Fixing any broken depedencies"
-apt-get $apt_args install
+apt-get -f autoremove
 
 install_list=`awk '{print $1}' /opt/vyatta/etc/deb-versions.txt|tr '\n' ' '`
 if [ ! "$install_list" ]
@@ -78,9 +75,9 @@ then
 fi
 
 echo "Vyatta full-upgrade status - Install retrieved packages"
-apt-get $apt_args install $install_list | tee /tmp/install$$
+apt-get -f install $install_list | tee /tmp/install$$
 echo "Vyatta full-upgrade status - Upgrade packages and handle dependencies"
-apt-get $apt_args dist-upgrade | tee /tmp/upgrade$$
+apt-get dist-upgrade | tee /tmp/upgrade$$
 
 if nothing_installed
 then
@@ -96,9 +93,9 @@ rm -rf /tmp/install$$ /tmp/upgrade$$
 
 echo "Vyatta full-upgrade status - Installed packages from new version"
 echo "Vyatta full-upgrade status - Fixing any broken depedencies"
-apt-get $apt_args install
+apt-get -f install
 echo "Vyatta full-upgrade status - Removing no longer needed dependencies"
-apt-get $apt_args autoremove
+apt-get -f autoremove
 echo "Vyatta full-upgrade status - Cleaning local repository of retrieved package files"
 apt-get clean	# remove the downloads in case we are close to full on root
 

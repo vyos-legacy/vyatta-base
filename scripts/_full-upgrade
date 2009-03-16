@@ -4,11 +4,15 @@
 # Date: 2007
 # Description:
 
-XES="/opt/vyatta/bin/xes"
+xes="/opt/vyatta/bin/xes"
+install_only="/opt/vyatta/bin/install-only"
+remove_packages="/opt/vyatta/bin/remove-packages"
 
 wait_for_reboot()
 {
-	sleep 20
+	echo Vyatta full-upgrade status - System is going to reboot shortly
+	sleep 10
+	echo Vyatta full-upgrade status - Rebooting system ...	
 	reboot
 	sleep 99999
 }
@@ -16,17 +20,27 @@ wait_for_reboot()
 case "$1" in
 -r)	
 	# then finish the upgrade in unattended mode
-	${XES} /opt/vyatta/bin/install-only &&
-        ${XES} /opt/vyatta/bin/remove-packages &&
+	$xes $install_only && $xes $remove_packages
 	wait_for_reboot
 	;;
 -k)
 	# then finish the upgrade in unattended mode
-	${XES} /opt/vyatta/bin/install-only &&
+	$xes $install_only
 	wait_for_reboot
 	;;
 -i)
-	install-only && exec remove-packages
+	$install_only && $remove_packages
+	echo You need to reboot the system to complete the upgrade
+	echo -n "Reboot now? (Y/N) [Y]: "
+	read j
+	case "$j" in
+	y|Y|[yY][eE][sS]|"" )
+		wait_for_reboot
+        	;;
+	* )
+		exit
+		;;
+	esac
 	;;
 esac
 

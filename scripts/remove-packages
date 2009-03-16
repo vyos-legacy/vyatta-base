@@ -42,13 +42,4 @@ case "$j" in
 	echo These packages will be kept.
 esac
 
-echo You need to reboot the system to complete the upgrade
-echo -n "Reboot now? "
-read j
-case "$j" in
-y|Y|[yY][eE][sS] )
-	reboot
-	sleep 99999
-	;;
-esac
 exit

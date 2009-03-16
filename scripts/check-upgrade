@@ -20,8 +20,8 @@ Pin-Priority: 1000
 EOF
 
 # suppress repeated empty output lines
-cat -s /etc/apt/preferences > /etc/apt/preferences-bkup
-mv /etc/apt/preferences-bkup /etc/apt/preferences
+cat -s /etc/apt/preferences > /etc/apt/preferences-$$-bkup
+mv /etc/apt/preferences-$$-bkup /etc/apt/preferences
 
 # delete leading whitespace from front of each line
 sed -i 's/^[ \t]*//' /etc/apt/preferences
