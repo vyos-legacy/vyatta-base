@@ -18,49 +18,12 @@ nothing_upgraded()
 	grep "$PATTERN" /tmp/install$$ && grep "$PATTERN" /tmp/upgrade$$
 }
 
-prevent_start_on_install()
-{
-if [ -f /usr/sbin/policy-rc.d ]
- then
-  # Save policy-rc.d file
-  mv /usr/sbin/policy-rc.d /usr/sbin/policy-rc.d.orig
-fi
-
-# Create policy-rc.d file
-cat > /usr/sbin/policy-rc.d << EOF
-#!/bin/sh
-
-echo
-echo "PREVENT DAEMONS FROM STARTING DURING UPGRADE"
-
-exit 101
-EOF
-
-chmod 0755 /usr/sbin/policy-rc.d
-}
-
-revert_to_default_policy()
-{
-if [ -f /usr/sbin/policy-rc.d.orig ]
- then
-  # Restore policy-rc.d file
-  mv /usr/sbin/policy-rc.d.orig /usr/sbin/policy-rc.d
- else
-  # Remove policy-rc.d file
-  rm -f /usr/sbin/policy-rc.d
-fi
-}
-
-trap revert_to_default_policy INT TERM EXIT
-
 df=noninteractive
 export DEBIAN_FRONTEND="$df"
 
 # Find all vyatta packages to remove
 cd /tmp
 sed '3icase "$1" in upgrade) exit 0;; esac' -i /var/lib/dpkg/info/vyatta-quagga.prerm 2>/dev/null || true
-
-prevent_start_on_install
 
 echo -e "$stars\nVyatta full-upgrade status - Configuring unpacked packages"
 dpkg --configure -a

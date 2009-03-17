@@ -19,7 +19,41 @@ $0 must be run with one of the following options:
 EOF
 }
 
+prevent_start_on_install()
+{
+if [ -f /usr/sbin/policy-rc.d ]
+ then
+  # Save policy-rc.d file
+  mv /usr/sbin/policy-rc.d /usr/sbin/policy-rc.d.orig
+fi
+
+# Create policy-rc.d file
+cat > /usr/sbin/policy-rc.d << EOF
+#!/bin/sh
+
+echo
+echo "PREVENT DAEMONS FROM STARTING DURING UPGRADE"
+
+exit 101
+EOF
+
+chmod 0755 /usr/sbin/policy-rc.d
+}
+
+revert_to_default_policy()
+{
+if [ -f /usr/sbin/policy-rc.d.orig ]
+ then
+  # Restore policy-rc.d file
+  mv /usr/sbin/policy-rc.d.orig /usr/sbin/policy-rc.d
+ else
+  # Remove policy-rc.d file
+  rm -f /usr/sbin/policy-rc.d
+fi
+}
+
 stop_parent_fullupgrade() {
+ revert_to_default_policy
  # need to stop parent full-upgrade script if one exists
  array=(`ps ax | grep "/usr/bin/full-upgrade\|/opt/vyatta/bin/full-upgrade" \
 	| grep -v grep | awk {'print $1'}`)
@@ -111,6 +145,7 @@ fi
 
 check_repo
 cd /tmp
+prevent_start_on_install
 check-upgrade $*
 
 OPTION="$1"
