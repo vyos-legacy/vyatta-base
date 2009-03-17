@@ -144,8 +144,8 @@ echo -e "$stars\nVyatta full-upgrade status - Fixing any broken depedencies"
 apt-get -y -f install
 
 echo -e "$stars\nVyatta full-upgrade status - Downloading updates..."
-echo "Vyatta full-upgrade status - This may take a few minutes..."
 apt-get -y -f -d install $install_list | tee /tmp/install$$
+echo -e "$stars\nVyatta full-upgrade status - Downloading any dependencies..."
 apt-get -y -f -d dist-upgrade | tee /tmp/upgrade$$
 
 if nothing_installed
