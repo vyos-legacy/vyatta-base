@@ -1,3 +1,9 @@
+vyatta-base (0.26) unstable; urgency=low
+
+  * * remove nonessential code from expect script
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Tue, 17 Mar 2009 12:08:10 -0700
+
 vyatta-base (0.25) unstable; urgency=low
 
   * prevent start of service after package installation throughout full-
