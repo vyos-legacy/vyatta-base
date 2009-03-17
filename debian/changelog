@@ -1,3 +1,10 @@
+vyatta-base (0.25) unstable; urgency=low
+
+  * prevent start of service after package installation throughout full-
+    upgrade
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Mon, 16 Mar 2009 17:20:44 -0700
+
 vyatta-base (0.24) unstable; urgency=low
 
   * * add delimiters to indicate the start of a new action during full-
