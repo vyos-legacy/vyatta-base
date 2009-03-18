@@ -1,3 +1,10 @@
+vyatta-base (0.27) unstable; urgency=low
+
+  * * remove redundant code from install-only already executed in
+    download-only
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Tue, 17 Mar 2009 17:13:30 -0700
+
 vyatta-base (0.26) unstable; urgency=low
 
   * * remove nonessential code from expect script
