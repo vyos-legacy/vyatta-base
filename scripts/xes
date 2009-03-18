@@ -5,6 +5,16 @@ trap exit { SIGCHLD }
 # Default timeout value 10
 set timeout 2
 
+# called from download-only to fix dependencies
+log_user 1
+if { "$argv" == "fix" } {
+ spawn apt-get -f install
+ for {} 1 {} {
+	expect -re ".*\\?" { send "Y\r\n" }
+ }
+}
+
+# called from _full-upgrade
 log_user 0
 log_file -a /root/full-upgrade.log
 

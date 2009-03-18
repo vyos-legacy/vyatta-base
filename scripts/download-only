@@ -140,8 +140,10 @@ then
 fi
 
 remove_2Bdowngraded_pkgs
+# if anything was removed for downgrade, you need to fix dependencies
+# do it in a non-interactive way as we caused broken dependencies
 echo -e "$stars\nVyatta full-upgrade status - Fixing any broken depedencies"
-apt-get -y -f install
+/opt/vyatta/bin/xes "fix"
 
 echo -e "$stars\nVyatta full-upgrade status - Downloading updates..."
 apt-get -y -f -d install $install_list | tee /tmp/install$$
