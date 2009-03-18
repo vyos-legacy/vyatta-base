@@ -150,13 +150,14 @@ apt-get -y -f -d dist-upgrade | tee /tmp/upgrade$$
 
 if nothing_installed
 then
-	echo
-	echo Nothing upgraded
+	echo -e "\n$stars\nVyatta full-upgrade status - All packages are from latest version of Vyatta"
+	echo "Vyatta full-upgrade status - Nothing to upgrade"
 	rm /tmp/install$$ /tmp/upgrade$$
 	echo "Vyatta full-upgrade status - Cleaning local repository of retrieved package files"
 	apt-get clean	# clean up the downloads in case we are close to full on root
+	echo "Exiting full-upgrade process"
 	exit 1
 fi
 
+rm /tmp/install$$ /tmp/upgrade$$
 echo -e "Vyatta full-upgrade status - Download complete\n$stars"
-#rm -rf /tmp/install$$ /tmp/upgrade$$

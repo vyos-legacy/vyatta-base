@@ -1,22 +1,10 @@
-#!/bin/sh -e
+#!/bin/sh
 
 # Author: Rick Balocca
 # Date: 2007
 # Description:
 
 stars="*******************************************************************************"
-
-nothing_installed()
-{
-	PATTERN='\<0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.'
-	grep "$PATTERN" /tmp/install$$ && grep "$PATTERN" /tmp/upgrade$$
-}
-
-nothing_upgraded()
-{
-	PATTERN='\<0 upgraded, 0 newly installed'
-	grep "$PATTERN" /tmp/install$$ && grep "$PATTERN" /tmp/upgrade$$
-}
 
 df=noninteractive
 export DEBIAN_FRONTEND="$df"
@@ -40,22 +28,9 @@ then
 fi
 
 echo -e "$stars\nVyatta full-upgrade status - Install retrieved packages"
-apt-get -f install $install_list | tee /tmp/install$$
+apt-get -f install $install_list
 echo -e "$stars\nVyatta full-upgrade status - Upgrade packages and handle dependencies"
-apt-get dist-upgrade | tee /tmp/upgrade$$
-
-if nothing_installed
-then
-	echo
-	echo Nothing upgraded
-	rm /tmp/install$$ /tmp/upgrade$$
-	apt-get clean	# clean up the downloads in case we are close to full on root
-	exit 1
-fi
-
-rm -rf /tmp/install$$ /tmp/upgrade$$
-##############################################################
-
+apt-get dist-upgrade
 echo -e "$stars\nVyatta full-upgrade status - Installed packages from new version"
 echo -e "$stars\nVyatta full-upgrade status - Fixing any broken depedencies"
 apt-get -f install
