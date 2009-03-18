@@ -1,3 +1,10 @@
+vyatta-base (0.28) unstable; urgency=low
+
+  * fix dependencies in a non-interactive way after removing packages to
+    downgrade
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Wed, 18 Mar 2009 16:46:04 -0700
+
 vyatta-base (0.27) unstable; urgency=low
 
   * * remove redundant code from install-only already executed in
