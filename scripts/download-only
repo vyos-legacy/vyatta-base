@@ -5,6 +5,7 @@
 # Description:
 
 stars="*******************************************************************************"
+pkgs_removed="no"
 
 nothing_installed()
 {
@@ -62,6 +63,7 @@ remove_2Bdowngraded_pkgs() {
  # remove packages
  if [ "$rm_pkgs_list" != "" ]; then
   dpkg --force-depends --remove $rm_pkgs_list
+  pkgs_removed="yes"
  else
   echo Vyatta full-upgrade status - No packages to be downgraded
  fi
@@ -142,8 +144,10 @@ fi
 remove_2Bdowngraded_pkgs
 # if anything was removed for downgrade, you need to fix dependencies
 # do it in a non-interactive way as we caused broken dependencies
-echo -e "$stars\nVyatta full-upgrade status - Fixing any broken depedencies"
-/opt/vyatta/bin/xes "fix"
+if [ "$pkgs_removed" != "no" ]; then
+ echo -e "$stars\nVyatta full-upgrade status - Fixing any broken depedencies"
+ /opt/vyatta/bin/xes "fix"
+fi
 
 echo -e "$stars\nVyatta full-upgrade status - Downloading updates..."
 apt-get -y -f -d install $install_list | tee /tmp/install$$

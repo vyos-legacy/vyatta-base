@@ -5,6 +5,7 @@
 # Description:
 
 PATH=/opt/vyatta/bin:$PATH
+stars="*******************************************************************************"
 
 usage()
 {
@@ -67,73 +68,33 @@ stop_parent_fullupgrade() {
  done
 }
 
-# picked up from install-system script
-get_response () {
-  ldefault=$(echo "$1" | tr [:upper:] [:lower:])
-  loptions=$(echo "$2" | tr [:upper:] [:lower:])
-
-  # get the response from the user
-  read myresponse
-  myresponse=$(echo "$myresponse" | tr [:upper:] [:lower:])
-
-  # Check to see if the user accepts the default
-  if [ -z "$myresponse" ]; then
-    echo -n $ldefault
-  # if we are passing in options to check, make sure response is a valid option
-  elif [ -n "$loptions" ]; then
-    for token in $loptions
-      do
-        if [ "$token" == "$myresponse" ]; then
-          echo -n "$myresponse"
-          return 0
-        fi
-      done
-    return 1
-  else
-    echo -n "$myresponse"
-  fi
-
-  return 0
-}
-
 check_repo() {
 
-# check if you have more than one repo configured in sources.list
-# if yes, advise user and ask if user wishes to continue?
+# if no repos configured in sources.list then fail out
 num_repos=`cat /etc/apt/sources.list | awk {'print $1'} | grep "^deb$" | wc -l`
 if [ "$num_repos" == "0" ]; then
  echo No repository configured to retrieve packages
  exit 1
 fi
 
-if [ "$num_repos" -gt "1" ]; then
- response=''
- while [ -z "$response" ]
-  do
-   echo "full-upgrade process detected multiple repositories to get packages from"
-   echo "unless specified in release notes, this is advised against during full-upgrade"
-   echo -ne "Would you like to continue anyway? (Y/N) [N]: "
-   response=$(get_response "N" "Y N")
-   if [ "$response" == "n" ]; then
-    exit 0
-   fi
-  done
-fi
+echo -e "$stars\nVyatta full-upgrade status - Configuring unpacked packages"
+dpkg --configure -a || exit $?
 
-# simulate apt-get update and report error if any
-apt-get --simulate update >/dev/null 2>&1
-if [ `echo $?` != 0 ]; then
- echo "username/password incorrect or repository not configured accurately"
- exit 1
-else
- apt-get --simulate update >/tmp/$$-sim-apt-update 2>&1
- count_failed=`grep -i 'FAILED' /tmp/$$-sim-apt-update | wc -l`
- if [ "$count_failed" != "0" ]; then
-  echo "unable to resolve repository url or connect to repository"
+echo -e "$stars\nVyatta full-upgrade status - Resynchronizing package index files"
+# if unable to run apt-get update succesfully, report error
+apt-get update >/tmp/$$-sim-apt-update 2>&1
+result=`echo $?`
+count_failed=`grep -i 'FAILED' /tmp/$$-sim-apt-update | wc -l`
+if [ "$result" != "0" -o "$count_failed" != "0" ]; then
+  echo -e "\nUnable to resynchronize package index files from their sources"
+  echo "This may be due to one of the following reasons :"
+  echo " * unable to resolve repository hostname"
+  echo " * unable to connect to repository"
+  echo " * repository not configured correctly"
   rm -f /tmp/$$-sim-apt-update
   exit 1
- fi
 fi
+rm -f /tmp/$$-sim-apt-update
 }
 
 trap stop_parent_fullupgrade INT TERM EXIT
@@ -146,7 +107,7 @@ fi
 check_repo
 cd /tmp
 prevent_start_on_install
-check-upgrade $*
+check-upgrade $* || exit
 
 OPTION="$1"
 [ "$OPTION" ] || OPTION=`ps l|grep -v grep|grep 'full-upgrade -'|sed 's,.*full-upgrade ,,'`

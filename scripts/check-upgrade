@@ -1,8 +1,39 @@
-#!/bin/sh -e
+#!/bin/sh
 
 # Author: Rick Balocca
 # Date: 2007
 # Description:
+
+# picked up from install-system script
+get_response () {
+  ldefault=$(echo "$1" | tr [:upper:] [:lower:])
+  loptions=$(echo "$2" | tr [:upper:] [:lower:])
+
+  # get the response from the user
+  read myresponse
+  myresponse=$(echo "$myresponse" | tr [:upper:] [:lower:])
+
+  # Check to see if the user accepts the default
+  if [ -z "$myresponse" ]; then
+    echo -n $ldefault
+  # if we are passing in options to check, make sure response is a valid option
+  elif [ -n "$loptions" ]; then
+    for token in $loptions
+      do
+        if [ "$token" == "$myresponse" ]; then
+          echo -n "$myresponse"
+          return 0
+        fi
+      done
+    return 1
+  else
+    echo -n "$myresponse"
+  fi
+
+  return 0
+}
+
+set -e
 
 df=noninteractive
 export DEBIAN_FRONTEND="$df"
@@ -27,12 +58,34 @@ mv /etc/apt/preferences-$$-bkup /etc/apt/preferences
 # delete leading whitespace from front of each line
 sed -i 's/^[ \t]*//' /etc/apt/preferences
 
-cd /tmp
-echo -e "$stars\nVyatta full-upgrade status - Configuring unpacked packages"
-dpkg --configure -a
+set +e
 
+cd /tmp
 echo -e "$stars\nVyatta full-upgrade status - Fixing any broken package dependencies"
 apt-get -y -f install
+if [ `echo $?` != 0 ]; then 
+ echo -e "\nVyatta full-upgrade error - Unable to fix dependencies"
+ echo -e "Use apt-get and/or dpkg tools to fix dependencies before continuing"
+ echo -e "Exiting full-upgrade process"
+ exit 1
+fi
+
+num_repos=`cat /etc/apt/sources.list | awk {'print $1'} | grep "^deb$" | wc -l`
+if [ "$num_repos" -gt "1" ]; then
+ response=''
+ while [ -z "$response" ]
+  do
+   echo -e "\nfull-upgrade process detected multiple repositories to get packages from"
+   echo "unless specified in release notes, this is advised against during full-upgrade"
+   echo -ne "Would you like to continue anyway? (Y/N) [N]: "
+   response=$(get_response "N" "Y N")
+   if [ "$response" == "n" ]; then
+    exit 1
+   fi
+  done
+fi
+
+set -e
 
 checksum()
 {(
@@ -47,8 +100,6 @@ checksum()
 		xes 2>/dev/null || true
 )}
 
-echo -e "$stars\nVyatta full-upgrade status - Resynchronizing package index files"
-apt-get update
 checksum >/tmp/full-upgrade.md5
 echo -e "$stars\nVyatta full-upgrade status - Installing latest Vyatta-base package"
 apt-get -y -f install vyatta-base
