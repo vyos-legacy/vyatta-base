@@ -1,3 +1,10 @@
+vyatta-base (0.29) unstable; urgency=low
+
+  * * try to configure unpacked packages and fix broken dependencies
+    before
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Thu, 19 Mar 2009 12:34:06 -0700
+
 vyatta-base (0.28) unstable; urgency=low
 
   * fix dependencies in a non-interactive way after removing packages to
