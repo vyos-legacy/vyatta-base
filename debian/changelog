@@ -1,3 +1,9 @@
+vyatta-base (0.30) unstable; urgency=low
+
+  * get a confirmation for repos before continuing with full-upgrade
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Wed, 29 Apr 2009 11:35:58 -0700
+
 vyatta-base (0.29) unstable; urgency=low
 
   * * try to configure unpacked packages and fix broken dependencies
