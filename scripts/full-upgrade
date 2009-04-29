@@ -66,6 +66,8 @@ stop_parent_fullupgrade() {
   fi
  let i++
  done
+ # remove print-repo tmp file
+ rm -f /tmp/print-repo-check-upgrade > /dev/null 2>&1
 }
 
 check_repo() {

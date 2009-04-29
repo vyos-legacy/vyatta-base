@@ -33,6 +33,66 @@ get_response () {
   return 0
 }
 
+# print repo information
+print_repo_info () {
+ set +e
+ echo -ne "full-upgrade detected the following repositories to get packages from - \n"
+ echo -ne "\nRepositories configured in CLI :"
+ # present repos in active config
+ active_repos_dir='/opt/vyatta/config/active/system/package/repository/'
+ active_repos=$(ls $active_repos_dir 2>/dev/null)
+
+ for r in $active_repos
+ do
+   echo -e "\n$r"
+   repo_nodes=$(ls $active_repos_dir/$r/)
+   for n in $repo_nodes
+   do
+     val=`cat $active_repos_dir/$r/$n/node.val 2>/dev/null`
+     if [ "$val" != "" ]; then
+       echo -e "\t$n: $val"
+     fi
+   done
+ done
+
+ if [ -z "$active_repos" ]; then
+   echo " ***** No repositories configured in CLI *****"
+ fi
+
+ # present repos entered manually outside of CLI
+ num=$(cat /etc/apt/sources.list | grep "^deb " | grep -v "# .* #" | wc -l)
+ if [ $num -gt 0 ]; then
+   echo -e "\nRepositories configured outside of CLI :"
+   cat /etc/apt/sources.list | grep "^deb " | grep -v "# .* #"
+ fi
+ echo
+
+ response=''
+ while [ -z "$response" ]
+  do
+   echo -ne "\nMake sure you have the correct repository configured. Continue? (Y/N) [N]: "
+   response=$(get_response "N" "Y N")
+   if [ "$response" == "n" ]; then
+    exit 1
+   fi
+ done
+
+ num_repos=`cat /etc/apt/sources.list | awk {'print $1'} | grep "^deb$" | wc -l`
+ if [ "$num_repos" -gt "1" ]; then
+   response=''
+   while [ -z "$response" ]
+     do
+      echo -e "\nUnless specified in release notes, multiple repositories during full-upgrade isn't recommended"
+      echo -ne "Would you like to continue anyway? (Y/N) [N]: "
+      response=$(get_response "N" "Y N")
+      if [ "$response" == "n" ]; then
+       exit 1
+      fi
+   done
+ fi
+ set -e
+}
+
 set -e
 
 df=noninteractive
@@ -70,22 +130,14 @@ if [ `echo $?` != 0 ]; then
  exit 1
 fi
 
-num_repos=`cat /etc/apt/sources.list | awk {'print $1'} | grep "^deb$" | wc -l`
-if [ "$num_repos" -gt "1" ]; then
- response=''
- while [ -z "$response" ]
-  do
-   echo -e "\nfull-upgrade process detected multiple repositories to get packages from"
-   echo "unless specified in release notes, this is advised against during full-upgrade"
-   echo -ne "Would you like to continue anyway? (Y/N) [N]: "
-   response=$(get_response "N" "Y N")
-   if [ "$response" == "n" ]; then
-    exit 1
-   fi
-  done
-fi
-
 set -e
+
+# need to do this only one time during full-upgrade
+if [ ! -e /tmp/print-repo-check-upgrade ]; then
+  touch /tmp/print-repo-check-upgrade >/dev/null 2>&1
+  echo -e "$stars"
+  print_repo_info
+fi
 
 checksum()
 {(
