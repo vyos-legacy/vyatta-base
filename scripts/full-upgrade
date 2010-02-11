@@ -70,6 +70,25 @@ stop_parent_fullupgrade() {
  rm -f /tmp/print-repo-check-upgrade > /dev/null 2>&1
 }
 
+fix_missing_files() {
+  # this was primarily put in to fix bug 4980
+  # upgrade of squid was failing if it's config file was missing
+  if [ ! -f /etc/squid3/squid.conf ]
+  then
+    if [ -f /etc/squid3/squid.conf.bak ]
+    then
+      cp /etc/squid3/squid.conf.bak /etc/squid3/squid.conf
+    else
+      touch /etc/squid3/squid.conf
+    fi
+    result=`echo $?`
+    if [ "$result" != "0" ]; then
+      echo 'failed to create missing squid3 config file'
+      exit 1
+    fi
+  fi
+}
+
 check_repo() {
 
 # if no repos configured in sources.list then fail out
@@ -109,6 +128,7 @@ fi
 check_repo
 cd /tmp
 prevent_start_on_install
+fix_missing_files
 check-upgrade $* || exit
 
 OPTION="$1"
