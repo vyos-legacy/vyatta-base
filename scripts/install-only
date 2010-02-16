@@ -15,7 +15,7 @@ sed '3icase "$1" in upgrade) exit 0;; esac' -i /var/lib/dpkg/info/vyatta-quagga.
 
 echo -e "$stars\nVyatta full-upgrade status - Configuring unpacked packages"
 dpkg --configure -a
-echo -e "$stars\nVyatta full-upgrade status - Fixing any broken depedencies"
+echo -e "$stars\nVyatta full-upgrade status - Fixing any broken dependencies"
 apt-get -f install
 echo -e "$stars\nVyatta full-upgrade status - Removing no longer needed dependencies"
 apt-get -f autoremove
@@ -32,7 +32,7 @@ apt-get -f install $install_list
 echo -e "$stars\nVyatta full-upgrade status - Upgrade packages and handle dependencies"
 apt-get dist-upgrade
 echo -e "$stars\nVyatta full-upgrade status - Installed packages from new version"
-echo -e "$stars\nVyatta full-upgrade status - Fixing any broken depedencies"
+echo -e "$stars\nVyatta full-upgrade status - Fixing any broken dependencies"
 apt-get -f install
 echo -e "$stars\nVyatta full-upgrade status - Removing no longer needed dependencies"
 apt-get -f autoremove

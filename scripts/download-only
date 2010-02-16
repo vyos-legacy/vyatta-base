@@ -114,7 +114,7 @@ fi
 # Find all vyatta packages to remove
 echo -e "$stars\nVyatta full-upgrade status - Removing no longer needed dependencies"
 apt-get -y -f autoremove
-echo -e "$stars\nVyatta full-upgrade status - Fixing any broken depedencies"
+echo -e "$stars\nVyatta full-upgrade status - Fixing any broken dependencies"
 apt-get -y -f install
 echo -e "$stars\nVyatta full-upgrade status - Cleaning local repository of retrieved package files"
 apt-get clean
@@ -145,7 +145,7 @@ remove_2Bdowngraded_pkgs
 # if anything was removed for downgrade, you need to fix dependencies
 # do it in a non-interactive way as we caused broken dependencies
 if [ "$pkgs_removed" != "no" ]; then
- echo -e "$stars\nVyatta full-upgrade status - Fixing any broken depedencies"
+ echo -e "$stars\nVyatta full-upgrade status - Fixing any broken dependencies"
  /opt/vyatta/bin/xes "fix"
 fi
 
