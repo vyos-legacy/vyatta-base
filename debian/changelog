@@ -1,3 +1,9 @@
+vyatta-base (0.33) unstable; urgency=low
+
+  * Fix Bug 5348 typo in text of download/install
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Tue, 16 Feb 2010 16:03:42 -0800
+
 vyatta-base (0.32) unstable; urgency=low
 
   [ root ]
