@@ -78,11 +78,25 @@ old_version=`dpkg -l | grep "vyatta-version" | awk '{print $3}'`
 new_version=`apt-get --dry-run install vyatta-version|grep '^Inst'|sed -e 's/.*(//' -e 's/ .*//'`
 
 case "$old_version" in 
-[0-3]* | VSE* )
+[0-3]* | VSE* ) # SE versions were numeric before kenwood release
 	case "$new_version" in
 	VC* )
-		echo ERROR: attempting to upgrade from supported to community
+		echo ERROR: attempting to upgrade from supported to community release
 		exit 1
+		;;
+	esac
+	;;
+esac
+
+# allow upgrade to development release for testing purpose
+case "$old_version" in
+VSE* | VC* )
+	case "$new_version" in
+	999* )
+		echo WARNING: Upgrading to unstable release
+		# need to remove existing version package to
+		# install a lower versioned dev package later
+		apt-get -y remove vyatta-version
 		;;
 	esac
 	;;
