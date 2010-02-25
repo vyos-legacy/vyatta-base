@@ -74,26 +74,15 @@ remove_2Bdowngraded_pkgs() {
 df=noninteractive
 export DEBIAN_FRONTEND="$df"
 
-old_version=`grep '^Version' /opt/vyatta/etc/version|sed -e 's/.*[ 	]//'`
+old_version=`dpkg -l | grep "vyatta-version" | awk '{print $3}'`
 new_version=`apt-get --dry-run install vyatta-version|grep '^Inst'|sed -e 's/.*(//' -e 's/ .*//'`
 
 case "$old_version" in 
-[0-9]* )
+[0-3]* | VSE* )
 	case "$new_version" in
-	[vV]* )
+	VC* )
 		echo ERROR: attempting to upgrade from supported to community
 		exit 1
-		;;
-	esac
-	;;
-* )
-	case "$new_version" in
-	[0-9]* | "" )
-		# if user upgrading from community to subscription then
-		# new version is smaller than current version and thus,
-		# apt-get reply "vyatta-version is already the newest version" 
-		# Remove it now to install vyatta-version package later
-		apt-get -y remove vyatta-version
 		;;
 	esac
 	;;
