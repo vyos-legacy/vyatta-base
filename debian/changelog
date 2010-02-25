@@ -1,3 +1,9 @@
+vyatta-base (0.33+kenwood3) unstable; urgency=low
+
+  * allow upgrade to dev branch
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Thu, 25 Feb 2010 10:16:12 -0800
+
 vyatta-base (0.33+kenwood2) unstable; urgency=low
 
   * conform to new versioning scheme
