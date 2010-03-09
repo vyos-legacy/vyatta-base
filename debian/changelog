@@ -1,3 +1,9 @@
+vyatta-base (0.33+kenwood5) unstable; urgency=low
+
+  * use better method to determine version of incoming package
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Tue, 09 Mar 2010 14:57:12 -0800
+
 vyatta-base (0.33+kenwood4) unstable; urgency=low
 
   * * Fix Bug 5411
