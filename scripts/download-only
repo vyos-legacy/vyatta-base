@@ -76,7 +76,7 @@ df=noninteractive
 export DEBIAN_FRONTEND="$df"
 
 old_version=`dpkg-query --showformat='${Version}' --show vyatta-version`
-new_version=`apt-get --dry-run install vyatta-version|grep '^Inst'|sed -e 's/.*(//' -e 's/ .*//'`
+new_version=`apt-cache showpkg vyatta-version | grep 'packages\.vyatta\.com' | grep -v '^ ' | awk {'print $1'}`
 
 case "$old_version" in 
 [0-3]* | VSE* ) # SE versions were numeric before kenwood release
