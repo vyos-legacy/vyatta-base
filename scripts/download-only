@@ -46,11 +46,12 @@ remove_2Bdowngraded_pkgs() {
  set +e
  while [ $i -lt $num_package_names ]; do
   # get current version for package
-  current_pkg_ver=`dpkg -s ${package_names[$i]} 2>/dev/null \
-		| grep Version | awk {'print $2'}`
+  current_pkg_ver=`dpkg-query --showformat='${Version}' --show ${package_names[$i]}`
+
   # check if version in new release is less then current version
-  dpkg --compare-versions ${package_versions[$i]} lt \
-			$current_pkg_ver >/dev/null 2>&1
+  new_package_version=`apt-cache showpkg ${package_names[$i]} | grep 'packages\.vyatta\.com' | grep -v '^ ' | awk {'print $1'}`
+  dpkg --compare-versions $new_package_version lt \
+                        $current_pkg_ver >/dev/null 2>&1
   if [ `echo $?` == 0 ]; then
    echo package ${package_names[$i]} needs to be removed for downgrade
    rm_pkgs_list=$rm_pkgs_list" "${package_names[$i]}
@@ -74,7 +75,7 @@ remove_2Bdowngraded_pkgs() {
 df=noninteractive
 export DEBIAN_FRONTEND="$df"
 
-old_version=`dpkg -l | grep "vyatta-version" | awk '{print $3}'`
+old_version=`dpkg-query --showformat='${Version}' --show vyatta-version`
 new_version=`apt-get --dry-run install vyatta-version|grep '^Inst'|sed -e 's/.*(//' -e 's/ .*//'`
 
 case "$old_version" in 
