@@ -1,3 +1,10 @@
+vyatta-base (0.39) unstable; urgency=low
+
+  * Fix Bug 5496 Upgrade to Version 6.0 from versions that didn't have
+    webproxy fail
+
+ -- Mohit Mehta <mohit.mehta@vyatta.com>  Fri, 26 Mar 2010 10:39:20 -0700
+
 vyatta-base (0.38) unstable; urgency=low
 
   * use better method to determine version of incoming package
