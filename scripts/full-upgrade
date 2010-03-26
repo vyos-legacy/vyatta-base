@@ -79,6 +79,7 @@ fix_missing_files() {
     then
       cp /etc/squid3/squid.conf.bak /etc/squid3/squid.conf
     else
+      mkdir -p /etc/squid3
       touch /etc/squid3/squid.conf
     fi
     result=`echo $?`
