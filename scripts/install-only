@@ -39,14 +39,6 @@ apt-get -f autoremove
 echo -e "$stars\nVyatta full-upgrade status - Cleaning local repository of retrieved package files"
 apt-get clean	# remove the downloads in case we are close to full on root
 
-##### use UUID instead of device for grub
-root_dev=$(mount | grep ' on / type ' | cut -f 1 -d ' '|sed 's,/dev/,,')
-
-if grep ide=nodma /boot/grub/menu.lst /boot/grub/grub.cfg >&/dev/null
-then
-	grub_options=ide=nodma
-fi
-
-echo -e "$stars\nVyatta full-upgrade status - Setting up grub"
-/opt/vyatta/sbin/vyatta-grub-setup "$root_dev" "$grub_options" || echo WARNING: grub not completely setup.
+echo -e "$stars\nVyatta full-upgrade status - Updating grub config file"
+/opt/vyatta/sbin/vyatta-update-grub.pl  || echo WARNING: grub config file not properly updated.
 echo -e "$stars\nVyatta full-upgrade status - Completed grub setup"
