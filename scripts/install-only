@@ -9,6 +9,28 @@ stars="*************************************************************************
 df=noninteractive
 export DEBIAN_FRONTEND="$df"
 
+#
+# On image booted machines, we need to mount /boot from the image-specific
+# boot directory so that kernel package installation will put the
+# files in the right place.  We also have to mount /boot/grub from the
+# system-wide grub directory so that tools that edit the grub.cfg
+# file will find it in the expected location.  This is done automatically at
+# boot time in Larkspur and later.
+#
+if [ -e /live/image/boot ]; then
+    image_name=`cat /proc/cmdline | sed -e s+^.*vyatta-union=/boot/++ | sed -e 's/ .*$//'`
+    mounted=`mount | grep '^/live/image/boot'`
+    if [ -n "$image_name" -a -z "$mounted" ]; then
+        # Not much we can do if this fails, so we discard any
+        # error messages so as not to distract the user
+        mount --bind /live/image/boot/$image_name /boot > /dev/null 2>&1
+        if [ ! -d /boot/grub ]; then
+            mkdir /boot/grub
+        fi
+        mount --bind /live/image/boot/grub /boot/grub > /dev/null 2>&1
+    fi
+fi
+
 # Find all vyatta packages to remove
 cd /tmp
 sed '3icase "$1" in upgrade) exit 0;; esac' -i /var/lib/dpkg/info/vyatta-quagga.prerm 2>/dev/null || true
