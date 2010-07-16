@@ -72,6 +72,28 @@ remove_2Bdowngraded_pkgs() {
 
 }
 
+download_virt_pkgs() {
+  # if running kernel is a virt kernel; download virt packages
+  # explicitly since they aren't listed in deb-versions.txt
+  uname -r | grep -q virt
+  is_virt_kern=`echo $?`
+  if [ "$is_virt_kern" = "0" ]; then
+    virt_suffix='virt'
+
+    virt_kern=`grep linux-image /opt/vyatta/etc/deb-versions.txt \
+| awk '{print $1}'`
+
+    ovm_mod=`grep linux-image /opt/vyatta/etc/deb-versions.txt \
+| sed 's/linux\-image/open\-vm\-modules/' | awk '{print $1}'`
+
+    virt_kern="$virt_kern-$virt_suffix"
+    ovm_mod="$ovm_mod-$virt_suffix"
+    virt_packages=$virt_kern" "$ovm_mod" "open-vm-tools
+    echo -e "$stars\nVyatta full-upgrade status - Downloading virt updates..."
+    apt-get -y -f -d install $virt_packages | tee /tmp/install$$
+  fi
+}
+
 df=noninteractive
 export DEBIAN_FRONTEND="$df"
 
@@ -155,6 +177,9 @@ fi
 
 echo -e "$stars\nVyatta full-upgrade status - Downloading updates..."
 apt-get -y -f -d install $install_list | tee /tmp/install$$
+
+download_virt_pkgs
+
 echo -e "$stars\nVyatta full-upgrade status - Downloading any dependencies..."
 apt-get -y -f -d dist-upgrade | tee /tmp/upgrade$$
 

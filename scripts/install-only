@@ -4,6 +4,29 @@
 # Date: 2007
 # Description:
 
+
+install_virt_pkgs() {
+  # if running kernel is a virt kernel; install virt packages
+  # explicitly since they aren't listed in deb-versions.txt
+  uname -r | grep -q virt
+  is_virt_kern=`echo $?`
+  if [ "$is_virt_kern" = "0" ]; then
+    virt_suffix='virt'
+
+    virt_kern=`grep linux-image /opt/vyatta/etc/deb-versions.txt \
+| awk '{print $1}'`
+
+    ovm_mod=`grep linux-image /opt/vyatta/etc/deb-versions.txt \
+| sed 's/linux\-image/open\-vm\-modules/' | awk '{print $1}'`
+
+    virt_kern="$virt_kern-$virt_suffix"
+    ovm_mod="$ovm_mod-$virt_suffix"
+    virt_packages=$virt_kern" "$ovm_mod" "open-vm-tools
+    echo -e "$stars\nVyatta full-upgrade status - Install retrieved virt packages"
+    apt-get -f install $virt_packages
+  fi
+}
+
 stars="*******************************************************************************"
 
 df=noninteractive
@@ -51,6 +74,9 @@ fi
 
 echo -e "$stars\nVyatta full-upgrade status - Install retrieved packages"
 apt-get -f install $install_list
+
+install_virt_pkgs
+
 echo -e "$stars\nVyatta full-upgrade status - Upgrade packages and handle dependencies"
 apt-get dist-upgrade
 echo -e "$stars\nVyatta full-upgrade status - Installed packages from new version"
