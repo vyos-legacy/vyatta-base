@@ -73,6 +73,9 @@ remove_2Bdowngraded_pkgs() {
 }
 
 download_virt_pkgs() {
+  # unset 'exit on non-true value' mode as comparing versions below
+  set +e
+
   # if running kernel is a virt kernel; download virt packages
   # explicitly since they aren't listed in deb-versions.txt
   uname -r | grep -q virt
@@ -92,6 +95,9 @@ download_virt_pkgs() {
     echo -e "$stars\nVyatta full-upgrade status - Downloading virt updates..."
     apt-get -y -f -d install $virt_packages | tee /tmp/install$$
   fi
+
+  # reset to global 'exit on non-true value' mode
+  set -e
 }
 
 df=noninteractive
