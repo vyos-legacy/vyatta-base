@@ -38,24 +38,20 @@ print_repo_info () {
  set +e
  echo -ne "full-upgrade detected the following repositories to get packages from - \n"
  echo -ne "\nRepositories configured in CLI :"
- # present repos in active config
- active_repos_dir='/opt/vyatta/config/active/system/package/repository/'
- active_repos=$(ls $active_repos_dir 2>/dev/null)
 
- for r in $active_repos
- do
+ # present repos in active config
+ eval "repos=($(cli-shell-api listActiveNodes system package repository))"
+ for r in "${repos[@]}"; do
    echo -e "\n$r"
-   repo_nodes=$(ls $active_repos_dir/$r/)
-   for n in $repo_nodes
-   do
-     val=`cat $active_repos_dir/$r/$n/node.val 2>/dev/null`
-     if [ "$val" != "" ]; then
+   eval "nodes=($(cli-shell-api listActiveNodes system package repository $r))"
+   for n in "${nodes[@]}"; do
+     if val=$(cli-shell-api returnActiveValue \
+                system package repository $r $n) && [ -n "$val" ]; then
        echo -e "\t$n: $val"
      fi
    done
  done
-
- if [ -z "$active_repos" ]; then
+ if [ ${#repos[@]} == 0 ]; then
    echo " ***** No repositories configured in CLI *****"
  fi
 
