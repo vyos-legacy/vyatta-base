@@ -1,3 +1,9 @@
+vyatta-base (0.49) unstable; urgency=low
+
+  * new branch
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Tue, 28 Dec 2010 20:44:54 +0000
+
 vyatta-base (0.48) unstable; urgency=low
 
   * remove deprecated linda override
