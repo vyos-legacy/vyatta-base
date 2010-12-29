@@ -13,3 +13,4 @@ configure
 debian/files
 debian/vyatta-base
 debian/vyatta-base.debhelper.log
+debian/vyatta-base.substvars
