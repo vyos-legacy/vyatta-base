@@ -1,4 +1,5 @@
 #!/bin/sh
 
-dpkg -l | grep '^ii ' | sed -e 's/\([^ ]*\)  *\([^ ]*\)  *\([^ ]*\).*/\2 \3/' \
+dpkg-query -W -f '${Status} ${Package} ${Version}\n' \
+  | sed -n 's/^install ok installed //p' \
 	>/opt/vyatta/etc/deb-versions.txt
