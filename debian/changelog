@@ -1,3 +1,10 @@
+vyatta-base (0.48+mendocino2) unstable; urgency=low
+
+  * update .gitignore
+  * fix for bug 6410
+
+ -- An-Cheng Huang <ancheng@vyatta.com>  Wed, 29 Dec 2010 13:32:34 -0800
+
 vyatta-base (0.48+mendocino1) unstable; urgency=low
 
   * new branch
