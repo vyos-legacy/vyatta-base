@@ -39,15 +39,32 @@ print_repo_info () {
  echo -ne "full-upgrade detected the following repositories to get packages from - \n"
  echo -ne "\nRepositories configured in CLI :"
 
- # present repos in active config
- eval "repos=($(cli-shell-api listActiveNodes system package repository))"
+ # present repos in active config. if !cli-shell-api [i.e. vyatta-cfg is
+ # pre-mendocino] then use "directory-based" config access. Fixes BZ 6709
+ which cli-shell-api &>/dev/null
+ cli_shell_api=`echo $?`
+ if [ $cli_shell_api == 0 ]; then
+   eval "repos=($(cli-shell-api listActiveNodes system package repository))"
+ else
+   repos_dir='/opt/vyatta/config/active/system/package/repository/'
+   eval "repos=($(ls $repos_dir 2>/dev/null))"
+ fi
+
  for r in "${repos[@]}"; do
    echo -e "\n$r"
-   eval "nodes=($(cli-shell-api listActiveNodes system package repository $r))"
+   if [ $cli_shell_api == 0 ]; then
+     eval "nodes=($(cli-shell-api listActiveNodes system package repository $r))"
+   else
+     eval "nodes=($(ls $repos_dir/$r/))"
+   fi
    for n in "${nodes[@]}"; do
-     if val=$(cli-shell-api returnActiveValue \
-                system package repository $r $n) && [ -n "$val" ]; then
-       echo -e "\t$n: $val"
+     if [ $cli_shell_api == 0 ]; then
+       val=$(cli-shell-api returnActiveValue system package repository $r $n)
+     else
+       val=`cat $repos_dir/$r/$n/node.val 2>/dev/null`
+     fi
+     if [ -n "$val" ]; then
+         echo -e "\t$n: $val"
      fi
    done
  done
