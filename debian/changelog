@@ -1,3 +1,10 @@
+vyatta-base (0.48+mendocino3) unstable; urgency=low
+
+  * Fix Bug 6709 On full-upgrade to VSE6.2 - No repos configured in CLI
+    was seen
+
+ -- Mohit Mehta <mohit@vyatta.com>  Thu, 20 Jan 2011 16:59:39 -0800
+
 vyatta-base (0.48+mendocino2) unstable; urgency=low
 
   * update .gitignore
