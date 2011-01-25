@@ -117,12 +117,15 @@ echo -e "$stars\nVyatta full-upgrade status - Setting pin priority"
 touch /etc/apt/preferences
 sed -i '/BEGIN VYATTA ENTRY/,/END VYATTA ENTRY/{d}' /etc/apt/preferences
 cat <<EOF >> /etc/apt/preferences
-#Explanation: BEGIN VYATTA ENTRY
+Explanation: BEGIN VYATTA ENTRY
 Package: *
 Pin: release l=Vyatta
 Pin-Priority: 1000
-#Explanation: END VYATTA ENTRY
+Explanation: END VYATTA ENTRY
 EOF
+
+# rectify any entries user might've added with # in front of Explanation
+sed -i 's/^#Explanation:/Explanation:/g' /etc/apt/preferences
 
 # suppress repeated empty output lines
 cat -s /etc/apt/preferences > /etc/apt/preferences-$$-bkup
