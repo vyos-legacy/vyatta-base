@@ -1,3 +1,9 @@
+vyatta-base (0.48+mendocino4) unstable; urgency=low
+
+  * Fix Bug 6728 apt-get error on upgrade to 6.2 or higher version
+
+ -- Mohit Mehta <mohit@vyatta.com>  Tue, 25 Jan 2011 14:10:38 -0800
+
 vyatta-base (0.48+mendocino3) unstable; urgency=low
 
   * Fix Bug 6709 On full-upgrade to VSE6.2 - No repos configured in CLI
