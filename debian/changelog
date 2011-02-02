@@ -1,3 +1,9 @@
+vyatta-base (0.48+mendocino6) unstable; urgency=low
+
+  * do memory check independent of print repo info
+
+ -- Mohit Mehta <mohit@vyatta.com>  Tue, 01 Feb 2011 21:26:00 -0800
+
 vyatta-base (0.48+mendocino5) unstable; urgency=low
 
   * Fix Bug 6768 change check for minimum available disk space when
