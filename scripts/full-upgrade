@@ -68,6 +68,7 @@ stop_parent_fullupgrade() {
  done
  # remove print-repo tmp file
  rm -f /tmp/print-repo-check-upgrade > /dev/null 2>&1
+ rm -f /tmp/mem-check-upgrade > /dev/null 2>&1
 }
 
 fix_missing_files() {

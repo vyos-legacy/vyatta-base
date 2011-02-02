@@ -39,6 +39,7 @@ set +e
 total_mem=`cat /proc/meminfo | grep MemTotal | awk {'print $2'}`
 required_mem=500000  # check something a little less than 512 MB
 if [ $total_mem -lt $required_mem ]; then
+  echo -e "$stars"
   total_mem_MB=`expr "$total_mem" / 1024`
   echo -ne "Vyatta recommends minimum 512 Megabytes of memory but system has $total_mem_MB installed"
   response=''
@@ -50,7 +51,6 @@ if [ $total_mem -lt $required_mem ]; then
         exit 1
       fi
   done
-  echo -e "$stars"
 fi
 set -e
 }
@@ -171,10 +171,15 @@ fi
 set -e
 
 # need to do this only one time during full-upgrade
+if [ ! -e /tmp/mem-check-upgrade ]; then
+  touch /tmp/mem-check-upgrade >/dev/null 2>&1
+  mem_check
+fi
+
+# need to do this only one time during full-upgrade
 if [ ! -e /tmp/print-repo-check-upgrade ]; then
   touch /tmp/print-repo-check-upgrade >/dev/null 2>&1
   echo -e "$stars"
-  mem_check
   print_repo_info
 fi
 
