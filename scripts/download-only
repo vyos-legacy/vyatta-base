@@ -149,8 +149,17 @@ apt-get -y -f install
 echo -e "$stars\nVyatta full-upgrade status - Cleaning local repository of retrieved package files"
 apt-get clean
 
-
+# 400M disk space is required for full-upgrade on disk install
 required=400
+set +e
+/opt/vyatta/bin/vyatta-show-version | grep 'Boot via' | grep -q image
+image_install=`echo $?`
+if [ $image_install == 0 ]; then
+  # 800M disk space is required for full-upgrade on image based install
+  required=800
+fi
+set -e
+
 free=`df /var/cache/apt/archives|tail -1|awk '{print $4}'`
 free=`expr "$free" / 1000`
 if [ "$free" -a "$free" -lt $required ]

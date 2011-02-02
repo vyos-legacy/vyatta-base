@@ -33,6 +33,28 @@ get_response () {
   return 0
 }
 
+# memory check
+mem_check () {
+set +e
+total_mem=`cat /proc/meminfo | grep MemTotal | awk {'print $2'}`
+required_mem=500000  # check something a little less than 512 MB
+if [ $total_mem -lt $required_mem ]; then
+  total_mem_MB=`expr "$total_mem" / 1024`
+  echo -ne "Vyatta recommends minimum 512 Megabytes of memory but system has $total_mem_MB installed"
+  response=''
+  while [ -z "$response" ]
+    do
+      echo -ne "\nThis may have unintended consequences during full-upgrade. Continue? (Y/N) [N]: "
+      response=$(get_response "N" "Y N")
+      if [ "$response" == "n" ]; then
+        exit 1
+      fi
+  done
+  echo -e "$stars"
+fi
+set -e
+}
+
 # print repo information
 print_repo_info () {
  set +e
@@ -152,6 +174,7 @@ set -e
 if [ ! -e /tmp/print-repo-check-upgrade ]; then
   touch /tmp/print-repo-check-upgrade >/dev/null 2>&1
   echo -e "$stars"
+  mem_check
   print_repo_info
 fi
 
