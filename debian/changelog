@@ -1,3 +1,9 @@
+vyatta-base (0.53) unstable; urgency=low
+
+  * Fix Bug 6768 change check for minimum available disk space when
+
+ -- Mohit Mehta <mohit@vyatta.com>  Tue, 01 Feb 2011 19:28:42 -0800
+
 vyatta-base (0.52) unstable; urgency=low
 
   * Fix Bug 6728 apt-get error on upgrade to 6.2 or higher version
