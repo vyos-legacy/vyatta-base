@@ -32,6 +32,11 @@ fi
 cat > /usr/sbin/policy-rc.d << EOF
 #!/bin/sh
 
+# Allow snmpd to stop (to allow deleting user)
+if [ "$1" = "snmpd" -a "$2" = "stop" ]
+then exit 0
+fi
+
 echo
 echo "PREVENT DAEMONS FROM STARTING DURING UPGRADE"
 
