@@ -1,3 +1,9 @@
+vyatta-base (0.48+mendocino7) unstable; urgency=low
+
+  * Allow snmp daemon to stop during upgrade
+
+ -- Stephen Hemminger <shemminger@vyatta.com>  Thu, 17 Feb 2011 16:14:21 -0800
+
 vyatta-base (0.48+mendocino6) unstable; urgency=low
 
   * do memory check independent of print repo info
