@@ -29,7 +29,7 @@ if [ -f /usr/sbin/policy-rc.d ]
 fi
 
 # Create policy-rc.d file
-cat > /usr/sbin/policy-rc.d << EOF
+cat > /usr/sbin/policy-rc.d << "EOF"
 #!/bin/sh
 
 # Allow snmpd to stop (to allow deleting user)
