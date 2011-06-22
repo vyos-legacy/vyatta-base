@@ -1,3 +1,10 @@
+vyatta-base (0.55) unstable; urgency=low
+
+  * Fix Bug 7067 full-upgrade command should impel the user toward
+    image-based upgrade
+
+ -- Mohit Mehta <mohit@vyatta.com>  Tue, 21 Jun 2011 18:46:37 -0700
+
 vyatta-base (0.54) unstable; urgency=low
 
   * do memory check independent of print repo info
