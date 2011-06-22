@@ -5,7 +5,36 @@
 # Description:
 
 PATH=/opt/vyatta/bin:$PATH
-stars="*******************************************************************************"
+stars="************************************************************************************"
+
+# picked up from install-system script
+get_response () {
+  ldefault=$(echo "$1" | tr [:upper:] [:lower:])
+  loptions=$(echo "$2" | tr [:upper:] [:lower:])
+
+  # get the response from the user
+  read myresponse
+  myresponse=$(echo "$myresponse" | tr [:upper:] [:lower:])
+
+  # Check to see if the user accepts the default
+  if [ -z "$myresponse" ]; then
+    echo -n $ldefault
+  # if we are passing in options to check, make sure response is a valid option
+  elif [ -n "$loptions" ]; then
+    for token in $loptions
+      do
+        if [ "$token" == "$myresponse" ]; then
+          echo -n "$myresponse"
+          return 0
+        fi
+      done
+    return 1
+  else
+    echo -n "$myresponse"
+  fi
+
+  return 0
+}
 
 usage()
 {
@@ -120,6 +149,42 @@ fi
 rm -f /tmp/$$-sim-apt-update
 }
 
+full_upgrade_experimental_msg() {
+echo -e "$stars\nPackage-based 'full-upgrade' process is no longer supported as of Vyatta version 6.3\n"
+echo -e "Image-based upgrade process is now the only official upgrade path for"
+echo -e "physical systems.  Please refer to the 'Image-based Upgrade' chapter"
+echo -e "in the 'Install and Upgrade' section of the Vyatta documentation for"
+echo -e "upgrade instructions."
+echo -e "\nVirtualized Vyatta systems must follow the upgrade path described in the"
+echo -e "'Upgrading in a Virtual Environment' chapter in the 'Install and Upgrade'"
+echo -e "section of the Vyatta documentation."
+echo -e "\n'full-upgrade' command is retained only for experimental purposes.  It may"
+echo -e "render your system inoperable and should not be run on any production system."
+
+response=''
+while [ -z "$response" ]
+  do
+    echo -ne "\nAre you sure you want to proceed with the deprecated 'full-upgrade' process? (Y/N) [N]:"
+    response=$(get_response "N" "Y N")
+    if [ "$response" == "n" ]; then
+      exit 1
+   fi
+done
+
+if [ "$response" == "y" ]; then
+  response=''
+  while [ -z "$response" ]
+    do
+      echo -ne "\nThis may render your system inoperable!  Are you sure?  (Y/N) [N]:"
+      response=$(get_response "N" "Y N")
+      if [ "$response" == "n" ]; then
+        exit 1
+      fi
+  done
+fi
+}
+
+
 trap stop_parent_fullupgrade INT TERM EXIT
 
 if [ `whoami` != 'root' ] ; then
@@ -132,6 +197,7 @@ cd /tmp
 prevent_start_on_install
 fix_missing_files
 check-upgrade $* || exit
+full_upgrade_experimental_msg
 
 OPTION="$1"
 [ "$OPTION" ] || OPTION=`ps l|grep -v grep|grep 'full-upgrade -'|sed 's,.*full-upgrade ,,'`
