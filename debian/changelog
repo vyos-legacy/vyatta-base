@@ -1,3 +1,9 @@
+vyatta-base (0.56) unstable; urgency=low
+
+  * new branch
+
+ -- Deepti Kulkarni <deepti@vyatta.com>  Thu, 07 Jul 2011 20:54:32 -0700
+
 vyatta-base (0.55) unstable; urgency=low
 
   * Fix Bug 7067 full-upgrade command should impel the user toward
