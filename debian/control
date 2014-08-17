@@ -1,7 +1,7 @@
 Source: vyatta-base
 Section: contrib/net
 Priority: extra
-Maintainer: Vyatta Package Maintainers <maintainers@vyatta.com>
+Maintainer: VyOS Package Maintainers <maintainers@vyos.net>
 Build-Depends: debhelper (>= 5), autotools-dev
 Standards-Version: 3.7.2
 
@@ -15,8 +15,8 @@ Depends: sed (>= 4.1.5),
  dpkg (>= 1.14.16),
  expect,
  apt
-Description: Vyatta full-upgrade script
- This script allows a full-upgrade all vyatta software
- using apt and pdkg.  It will install all vyatta packages,
- regardless of whether the individual Vyatta package was
+Description: VyOS full-upgrade script
+ This script allows a full-upgrade all VyOS software
+ using apt and pdkg.  It will install all VyOS packages,
+ regardless of whether the individual VyOS package was
  previously installed.
