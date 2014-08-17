@@ -1,3 +1,9 @@
+vyatta-base (0.58+vyos1+helium2) unstable; urgency=low
+
+  * Update maintainer address.
+
+ -- Daniil Baturin <daniil@baturin.org>  Sun, 17 Aug 2014 23:52:42 +0200
+
 vyatta-base (0.58+vyos1+helium1) unstable; urgency=low
 
   * New branch
